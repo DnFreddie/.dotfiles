@@ -22,7 +22,7 @@
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.aura = import ./home.nix;
+            home-manager.users.hypr = import ./home.nix;
           }
         ];
       };

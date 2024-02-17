@@ -2,8 +2,8 @@
 
 {
   # TODO please change the username & home direcotry to your own
-  home.username = "hyper";
-  home.homeDirectory = "/home/hyper";
+  home.username = "hypr";
+  home.homeDirectory = "/home/hypr";
 
   # link the configuration file in current directory to the specified location in home directory
   # home.file.".config/i3/wallpaper.jpg".source = ./wallpaper.jpg;
@@ -19,16 +19,13 @@
      recursive = true;   # link recursively
      executable = true;  # make all files executable
    };
-  home.file.".themes" = {
-     source = ./scripts;
-     recursive = true;   # link recursively
-   };
+
   home.file.".themes" = {
      source = ./dotfiles/.themes;
      recursive = true;   
    }; 
   home.file.".config/alacritty" = {
-     source = ./dotfiles/alacritt;
+     source = ./dotfiles/alacritty;
      recursive = true;   
    }; 
 
@@ -38,7 +35,7 @@
    }; 
 
   home.file.".config/nvim" = {
-     source = ./dotfiles/nvim/;
+     source = ./dotfiles/nvim;
      recursive = true;   
    }; 
 
@@ -48,7 +45,7 @@
    }; 
 
   home.file.".config/polybar" = {
-     source = ./dotfiles/polyba;
+     source = ./dotfiles/polybar;
      recursive = true;   
    }; 
 
