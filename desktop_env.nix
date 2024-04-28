@@ -1,8 +1,6 @@
 {config, pkgs, ... }:
-
 {
   environment.systemPackages = with pkgs; [
-    polybar
     dunst
     rofi
     lxappearance
@@ -24,7 +22,7 @@ xterm.enable = false;
 };
 displayManager = {
 defaultSession = "none+i3";
-  sddm = { 
+  gdm = { 
     enable = true;};
 
 };

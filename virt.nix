@@ -9,14 +9,11 @@
   programs.virt-manager.enable = true;
 
   environment.systemPackages = with pkgs; [
-    polybar
-    dunst
-    rofi
-    lxappearance
-    picom
-    arandr
-    flameshot
-    autotiling
+
+docker-compose
+openvpn
+awscli
+nmap
   ];
 }
 

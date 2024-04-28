@@ -12,6 +12,7 @@ services.pipewire = {
   #jack.enable = true;
 };
 
+  services.sysstat.enable = true;
 
   programs.thunar.enable = true;
   programs.xfconf.enable = true;
@@ -23,6 +24,11 @@ services.pipewire = {
 
   services.gvfs.enable = true; # Mount, trash, and other functionalities
   services.tumbler.enable = true; # Thumbnail support for images
+  
+
+
+
+
 
 fonts.packages = with pkgs; [
      (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" "Hack" ]; })

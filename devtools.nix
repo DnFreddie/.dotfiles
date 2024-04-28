@@ -8,11 +8,17 @@
     thunar-archive-plugin
     thunar-volman
   ];
-
-  services.gvfs.enable = true; # Mount, trash, and other functionalities
-  services.tumbler.enable = true; # Thumbnail support for images
+  programs.direnv.enable = true;
+  services.gvfs.enable = true; 
+  services.tumbler.enable = true;
 
   environment.systemPackages = with pkgs; [
+#GOlang
+#------------------------------------------------------
+    gnumake
+    at
+    sysstat
+    sqlite
     unzip
     ripgrep
     curl
@@ -24,7 +30,7 @@
     bat
     python3
     pciutils
-    python311Packages.pynvim  # Ensure this matches the exact attribute name in pkgs
+    python311Packages.pynvim  
     xclip
     vifm 
     tmux

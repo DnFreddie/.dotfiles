@@ -18,11 +18,13 @@
           ./devtools.nix 
           ./desktop_env.nix
           ./programming.nix
+          ./games.nix
+          ./cron.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-            home-manager.users.hypr = import ./home.nix;
+            home-manager.users.aura = import ./home.nix;
           }
         ];
       };

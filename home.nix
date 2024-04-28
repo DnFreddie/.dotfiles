@@ -2,91 +2,23 @@
 
 {
   # TODO please change the username & home direcotry to your own
-  home.username = "hypr";
-  home.homeDirectory = "/home/hypr";
+  home.username = "aura";
+  home.homeDirectory = "/home/aura";
 
   # link the configuration file in current directory to the specified location in home directory
   # home.file.".config/i3/wallpaper.jpg".source = ./wallpaper.jpg;
 
   # link all files in `./scripts` to `~/.config/i3/scripts`
-  home.file."scripts" = {
-     source = ./dotfiles/scripts;
-     recursive = true;   # link recursively
-     executable = true;  # make all files executable
-   };
-  home.file.".config/i3" = {
-     source = ./dotfiles/i3;
-     recursive = true;   # link recursively
-     executable = true;  # make all files executable
-   };
+  # home.file.".config/i3/scripts" = {
+  #   source = ./scripts;
+  #   recursive = true;   # link recursively
+  #   executable = true;  # make all files executable
+  # };
 
-  home.file.".themes" = {
-     source = ./dotfiles/.themes;
-     recursive = true;   
-   }; 
-  home.file.".config/alacritty" = {
-     source = ./dotfiles/alacritty;
-     recursive = true;   
-   }; 
-
-  home.file.".config/dunst" = {
-     source = ./dotfiles/dunst;
-     recursive = true;   
-   }; 
-
-  home.file.".config/nvim" = {
-     source = ./dotfiles/nvim;
-     recursive = true;   
-   }; 
-
-  home.file.".config/picom" = {
-     source = ./dotfiles/picom;
-     recursive = true;   
-   }; 
-
-  home.file.".config/polybar" = {
-     source = ./dotfiles/polybar;
-     recursive = true;   
-   }; 
-
-
-  home.file.".config/vifm" = {
-     source = ./dotfiles/vifm;
-     recursive = true;   
-   }; 
-
-
-  home.file."Pictures/wallpapers" = {
-     source = ./dotfiles/walppaers;
-     recursive = true;   
-   }; 
-
-  home.file.".bashrc" = {
-     source = ./dotfiles/.bashrc;
-     recursive = true;   
-   }; 
-  home.file.".inputrc" = {
-     source = ./dotfiles/.inputrc;
-     recursive = true;   
-   }; 
-
-  home.file.".tmux.conf" = {
-     source = ./dotfiles/.tmux.conf;
-     recursive = true;   
-   }; 
-
-
-
-
-
-
-
-
-
-
-
-
-
+  # encode the file content in nix configuration file directly
+  # home.file.".xxx".text = ''
+  #     xxx
+  # '';
 
   # Packages that should be installed to the user profile.
   home.packages = with pkgs; [
@@ -94,6 +26,7 @@
     # feel free to add your own or remove some of them
 
     # archives
+    obsidian
     zip
     xz
     unzip
@@ -107,6 +40,7 @@
     alacritty
     brave
     keepassxc
+    signal-desktop
     # misc
     cowsay
     file

@@ -20,7 +20,8 @@ white = "#B0B0B0"
 yellow = "#FFD866"
 
 [colors.primary]
-background = "#181a1b"
+#background = "#181a1b"
+background = "#1F1E2F"
 foreground = "#B0B0B0"
 
 [env]
@@ -47,7 +48,7 @@ style = "Bold"
 
 [font.offset]
 x = 0
-y = 1
+y = 0
 
 [[keyboard.bindings]]
 action = "Paste"

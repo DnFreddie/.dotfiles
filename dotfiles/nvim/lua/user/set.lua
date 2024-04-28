@@ -9,6 +9,8 @@ vim.opt.expandtab = true
 
 vim.opt.smartindent = true
 
+---vim.api.nvim_set_var('netrw_keepdir', 0)
+
 
 vim.opt.wrap = false
 

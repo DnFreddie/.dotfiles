@@ -3,7 +3,8 @@
 
  environment.systemPackages = with pkgs; [
   #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
+wget
+shellcheck
 turso-cli
 jdk
 gradle
@@ -14,6 +15,8 @@ rustup
 gcc
 clang
 chromium
+
   ];
+services.wordpress.sites."localhost" = {};
   
 }
