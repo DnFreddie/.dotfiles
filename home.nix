@@ -38,9 +38,7 @@
     dnsutils  # `dig` + `nslookup`
     ldns # replacement of `dig`, it provide the command `drill`
     alacritty
-    brave
     keepassxc
-    signal-desktop
     # misc
     cowsay
     file

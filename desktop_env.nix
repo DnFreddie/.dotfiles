@@ -8,6 +8,9 @@
     arandr  
     flameshot
     autotiling
+    vlc
+    brave
+    signal-desktop
 
   ];
 

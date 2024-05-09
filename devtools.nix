@@ -15,8 +15,14 @@
   environment.systemPackages = with pkgs; [
 #GOlang
 #------------------------------------------------------
+    postgresql
+    htop
+    pgcli
+    brave
+    signal-desktop
     gnumake
     at
+    libnotify  
     sysstat
     sqlite
     unzip

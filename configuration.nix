@@ -15,9 +15,15 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
   hardware.enableAllFirmware = true;
+  hardware.bluetooth.enable = true;
+
+
   services.xserver.videoDrivers = ["nvidia" "intel"];
   hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
-  hardware.bluetooth.enable = true;
+ 
+
+
+
 
 
   networking.hostName = "nixos"; # Define your hostname.
@@ -34,7 +40,7 @@
   # Set your time zone.
   time.timeZone = "Europe/Warsaw";
 
-  # Select internationalisation properties.
+  ## Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
   i18n.extraLocaleSettings = {
