@@ -18,12 +18,6 @@
   hardware.bluetooth.enable = true;
 
 
-  services.xserver.videoDrivers = ["nvidia" "intel"];
-  hardware.nvidia.package = config.boot.kernelPackages.nvidiaPackages.stable;
- 
-
-
-
 
 
   networking.hostName = "nixos"; # Define your hostname.
@@ -108,9 +102,6 @@
 
 networking.extraHosts =
   ''
-10.129.133.244  s3.thetoppers.htb
-
-
   '';
     nix.settings.auto-optimise-store = true;
 

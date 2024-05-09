@@ -580,7 +580,7 @@ exec_always --no-startup-id autotiling --limit 2
 #		-config ~/.config/rofi/rofidmenu.rasi
 bindsym $mod+Shift+x move scratchpad
 bindsym mod4+f [instance="thunar"] scratchpad show
-bindsym $mod+q [instance="chromium"] scratchpad show
+bindsym $mod+q [instance="brave"] scratchpad show
 bindsym mod4+q [instance="keepassxc"] scratchpad show
 bindsym mod4+w [instance="emacs"] scratchpad show
 
