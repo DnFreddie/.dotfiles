@@ -1,4 +1,5 @@
 -- This file can be loaded by calling `lua require('plugins')` from your init.vim
+--  
 
 -- Only required if you have packer configured as `opt`
 vim.cmd [[packadd packer.nvim]]
@@ -27,7 +28,9 @@ return require('packer').startup(function(use)
   use 'ray-x/guihua.lua'
   use("tpope/vim-fugitive")
   use("preservim/tagbar")
+
   use { "catppuccin/nvim", as = "catppuccin" }
+
   use("tpope/vim-commentary")
   use('hrsh7th/cmp-nvim-lua')
   use('hrsh7th/cmp-nvim-lsp-signature-help')
@@ -56,6 +59,7 @@ return require('packer').startup(function(use)
       { 'hrsh7th/cmp-nvim-lsp' }, -- Required
       { 'L3MON4D3/LuaSnip' },     -- Required
     }
+
   }
   use {
 	"windwp/nvim-autopairs",

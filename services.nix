@@ -12,6 +12,7 @@ services.pipewire = {
   #jack.enable = true;
 };
 
+
   services.sysstat.enable = true;
 
   programs.thunar.enable = true;
@@ -26,7 +27,13 @@ services.pipewire = {
   services.tumbler.enable = true; # Thumbnail support for images
   
 
+  boot.kernel.sysctl = { "vm.swappiness" = 10;};
 
+
+  swapDevices = [{
+    device = "/var/lib/swapfile";
+    size = 4 * 1024; 
+  }];
 
 
 

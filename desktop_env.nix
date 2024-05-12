@@ -11,6 +11,8 @@
     vlc
     brave
     signal-desktop
+    taskwarrior
+
 
   ];
 

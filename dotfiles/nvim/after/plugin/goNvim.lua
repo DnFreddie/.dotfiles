@@ -1,2 +1,3 @@
 require('go').setup()
-require("go.format").goimport()  -- goimport + gofmt
+---require("go.format").goimports()  -- goimports + gofmt
+

@@ -2,7 +2,7 @@
 draw_bold_text_with_bright_colors = true
 
 [colors.bright]
-black = "#727072"
+black = "#010508"
 blue = "#7D5BA6"
 cyan = "#78DCE8"
 magenta = "#AB9DF2"
@@ -11,7 +11,7 @@ white = "#FCFCFA"
 yellow = "#FFD866"
 
 [colors.normal]
-black = "#403E41"
+black = "#010508"
 blue = "#7D5BA6"
 cyan = "#78DCE8"
 magenta = "#AB9DF2"
@@ -21,7 +21,7 @@ yellow = "#FFD866"
 
 [colors.primary]
 #background = "#181a1b"
-background = "#1F1E2F"
+background = "#010508"
 foreground = "#B0B0B0"
 
 [env]

@@ -15,8 +15,13 @@
   environment.systemPackages = with pkgs; [
 #GOlang
 #------------------------------------------------------
+    tcpdump
+    wireshark
+    nmap
+    iotop
     postgresql
     htop
+    shellcheck
     pgcli
     brave
     signal-desktop
