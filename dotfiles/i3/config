@@ -312,7 +312,7 @@ set $ws10 "10"
 #workspace $ws5 output HDMI-0
 
 # bind program to workspace and focus to them on startup:
-assign [class="thunderbird"] $ws4
+##assign [class="thunderbird"] $ws4
 
 # automatic set focus new window if it opens on another workspace than the current:
 for_window [class=Xfce4-terminal] focus
@@ -379,7 +379,7 @@ exec --no-startup-id dex --autostart --environment i3
 
 # start a script to setup displays
 # uncomment the next line, use arandr to setup displays and save the file as monitor:
-exec --no-startup-id ~/.screenlayout/monitor.sh
+##exec --no-startup-id ~/.screenlayout/monitor.sh
 
 # set wallpaper
 # exec --no-startup-id sleep 2 && nitrogen --restore
@@ -579,8 +579,8 @@ bindsym $mod+t exec --no-startup-id rofi -show window \
 #bindsym $mod+c exec --no-startup-id rofi -modi "clipboard:greenclip print" -show clipboard \
 #		-config ~/.config/rofi/rofidmenu.rasi
 bindsym $mod+Shift+x move scratchpad
-bindsym mod4+f [instance="thunar"] scratchpad show
+#bindsym mod4+f [instance="thunar"] scratchpad show
 bindsym $mod+q [instance="brave"] scratchpad show
-bindsym mod4+q [instance="keepassxc"] scratchpad show
-bindsym mod4+w [instance="emacs"] scratchpad show
+#bindsym mod4+q [instance="keepassxc"] scratchpad show
+#bindsym mod4+w [instance="emacs"] scratchpad show
 

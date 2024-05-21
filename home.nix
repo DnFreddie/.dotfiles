@@ -43,6 +43,7 @@
     cowsay
     file
     which
+    thunderbird
     # system call monitoring
     strace # system call monitoring
     ltrace # library call monitoring

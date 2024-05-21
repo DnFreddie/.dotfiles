@@ -2,6 +2,7 @@
 
 {
 hardware.bluetooth.enable = true;
+services.blueman.enable = true;
 security.rtkit.enable = true;
 services.pipewire = {
   enable = true;
@@ -14,6 +15,7 @@ services.pipewire = {
 
 
   services.sysstat.enable = true;
+
 
   programs.thunar.enable = true;
   programs.xfconf.enable = true;
