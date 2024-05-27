@@ -72,7 +72,6 @@ vim.opt.signcolumn = "yes"
 vim.api.nvim_set_keymap('n', '<C-w>f', ':tab split<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<C-w>F', ':tabc<CR>', { noremap = true, silent = true })
 
-vim.api.nvim_set_keymap('n', '<Leader>n', 'eif err !== nil { }<Esc>', {noremap = true})
 
 
 

@@ -15,6 +15,7 @@
   environment.systemPackages = with pkgs; [
 #GOlang
 #------------------------------------------------------
+    insomnia
     tcpdump
     wireshark
     nmap
