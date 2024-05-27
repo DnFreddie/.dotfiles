@@ -16,28 +16,27 @@ shopt -s histverify
 shopt -s cdspell
 set show-mode-in-prompt on
 # ------------- Aliases --------------------
-alias gr="go run main.go"
+alias cat="bat"
 alias vs="sudo -E nvim "
 alias ed="sudo -E nvim  /etc/nixos/configuration.nix"
-alias cobra="cobra-cli"
-alias new="clear ; exec bash -l "
-alias wallpaper=" ./Pictures/walppaers/.screenlayout.sh;  feh --bg-fill $HOME/Pictures/walppaers/nasa-53884.jpg;"
-alias pd="podman"
-alias update="sudo nixos-rebuild switch"
-alias p="up"
+##alias wallpaper=" ./Pictures/walppaers/.screenlayout.sh;  feh --bg-fill $HOME/Pictures/walppaers/nasa-53884.jpg;"
+alias update='sudo nixos-rebuild switch; bash "$HOME"/scripts/backup_system.sh'
 alias cl="clear"
-alias b="source $HOME/scripts/bookmarks.sh"
-alias upgrade="sudo pacman -Syyu"
+alias b='source "$HOME"/scripts/bookmarks.sh'
 alias tn="tmux new-session -s \$(pwd | sed 's/.*\///g')"
-alias lc="find -type f | fzf | sed 's/^..//' | tr -d '\n' | xclip -selection c"
+#alias lc="find -type f | fzf | sed 's/^..//' | tr -d '\n' | xclip -selection c"
 alias path='echo -e "${PATH//:/\\n}"'
-alias rc="source ~/scripts/run_clean.sh"
 alias ls="ls --color=auto"
 alias py="python3"
 alias tn="attach_to_session"
 alias la="ls -a"
 alias ll='ls -lha'
 alias dp='tmux capture-pane -p -S - | nvim'
+alias diff='diff --color=auto'
+alias ip='ip --color=auto'
+alias q='~/scripts/quick_search ' 
+alias vi='vim'
+
 
 
 
@@ -45,6 +44,11 @@ alias dp='tmux capture-pane -p -S - | nvim'
 bind 'TAB:menu-complete'
 # owncomp=(awk)
 # for i in ${owncomp[@]};do complete -C '$HOME/scripts/snippets/$i' $i;done
+bind "set completion-ignore-case on"
+bind "set show-all-if-ambiguous on"
+bind '"\C-l": clear-screen'
+bind "set vi-ins-mode-string \1\e[5 q\e]12;cyan\a\2"
+bind "set vi-cmd-mode-string \1\e[1 q\e]12;cyan\a\2"
 
 
 
@@ -58,23 +62,20 @@ hh() {
 }
 
 v() {
-    if [ $# -eq 0 ]; then
-        # Open the current directory in nvim and change directory to it
-        nvim . 
+    if [ -z "$1" ]; then
+        command nvim .
+    elif [ -f "$1" ]; then
+        command nvim "$1"
+    elif [ -d "$1" ]; then
+        command cd "$1" && nvim .
+        command cd -  >> /dev/null || exit
     else
-        # Open or create a file and change directory to its location
-        local file="$1"
-        if [ ! -e "$file" ]; then
-            # If the file does not exist, create it
-            touch "$file"
-        fi
-        dir="$(dirname "$file")"
-        nvim "$file" +cd "$dir" -c "cd $dir"
+        # If it doesn't exist, create it as a file and then edit it with Neovim
+        command  nvim "$1"
     fi
 }
 
-
-#   Extract most know archives with one command
+ #  Extract most know archives with one command
 ex ()
 {
   if [ -f "$1" ] ; then
@@ -132,7 +133,7 @@ fast_command() {
 }
 attach_to_session() {
 
-    SESSION=$(tmux ls 2>/dev/null | fzf --height 10 | cut -d: -f1)
+    SESSION=$(tmux "ls" 2>/dev/null | fzf --height 10 | cut -d: -f1)
 
 
     if [ -n "$SESSION" ]; then
@@ -144,7 +145,8 @@ attach_to_session() {
         fi
 
     elif [ -z "$TMUX" ]; then
-        tmux new-session -s "$(basename $(pwd))"
+       
+        tmux new-session -s "$(basename "$(pwd)")"
     else
         echo "No session selected!"
     fi
@@ -154,7 +156,7 @@ open(){
     if [ -n "$1" ]; then
         xdg-open "$1"
     else
-    xdg-open "$(find -type f | fzf)"
+    xdg-open "$(find  . -type f | fzf)"
     fi
 }
 # Add to the path
@@ -241,11 +243,19 @@ lv() {
 export HISTCONTROL=ignoredups:erasedups
 # After each command, save and reload history
 export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
-
+export HISTSIZE=1000
+export HISTFILESIZE=2000
 #export LS_COLORS="*.py=03;33:*.csv=02;36:*.tar=00;31:*.go=38;5;93:*.rs=01;31:*.json=38;5;208:$LS_COLORS"
 export LS_COLORS="*.py=03;33:*.csv=02;36:*.tar=00;31:*.go=38;5;93:*.rs=01;31:*.json=38;5;208:*.nix=36;40;93:$LS_COLORS"
-
 export MANPAGER="nvim +Man!"
+export EDITOR="nvim"
+export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
+export LESS_TERMCAP_md=$'\E[1;36m'     # begin bold
+export LESS_TERMCAP_me=$'\E[0m'        # reset bold/blink
+export LESS_TERMCAP_so=$'\E[01;33m'    # begin reverse video
+export LESS_TERMCAP_se=$'\E[0m'        # reset reverse video
+export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
+export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
 
 
 #------------- Source --------------------
@@ -262,7 +272,7 @@ export MANPAGER="nvim +Man!"
 #------------- Prompt --------------------
 # Source files
 configure_prompt() {
-    local prompt_symbol='Λ'
+    ##local prompt_symbol='Λ'
 
     git_branch() {
         local branch
@@ -286,8 +296,7 @@ getDeep() {
     # Display logic
     if [ "$deepness" -eq 1 ]; then
         echo "$"
-    else
-        echo "${deepness}$"
+    else echo "${deepness}$"
     fi
 }
 
@@ -302,7 +311,13 @@ PS1="\u\[\e[35m\]${debian_chroot:+(\$debian_chroot)─}${VIRTUAL_ENV:+(\$(basena
 
 configure_prompt
 
-# Turso
 
 # Turso
 export PATH="/home/aura/.turso:$PATH"
+      if [ -n "$TMUX" ]; then
+        eval "$(direnv hook bash)";
+
+        fi
+
+
+export PATH="$HOME/go/bin/:$PATH"
