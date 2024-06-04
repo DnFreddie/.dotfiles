@@ -20,6 +20,7 @@
           ./programming.nix
           ./games.nix
           ./cron.nix
+          ./seciurity.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;

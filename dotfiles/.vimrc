@@ -67,8 +67,10 @@ vnoremap <leader>y "+y
 
 " Map <C-w>f to open the current file in a new tab
 nnoremap <silent> <C-w>f :tab split<CR>
+nnoremap  <leader>fr :bro ol <CR>
 
 
+" Define a function s:sink with the abort attribute
 
 " enable true colors support "
 set termguicolors

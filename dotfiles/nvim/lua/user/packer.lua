@@ -21,12 +21,10 @@ return require('packer').startup(function(use)
       ts_update()
     end, }
   use("nvim-treesitter/playground")
-  use("theprimeagen/harpoon")
   use("theprimeagen/refactoring.nvim")
   use("mbbill/undotree")
   use 'ray-x/go.nvim'
   use 'ray-x/guihua.lua'
-  use("tpope/vim-fugitive")
   use("preservim/tagbar")
 
   use { "catppuccin/nvim", as = "catppuccin" }

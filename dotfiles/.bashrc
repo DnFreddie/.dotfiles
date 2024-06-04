@@ -16,6 +16,8 @@ shopt -s histverify
 shopt -s cdspell
 set show-mode-in-prompt on
 # ------------- Aliases --------------------
+alias t="task"
+alias e="v ~/Documents/Notes/"
 alias cat="bat"
 alias vs="sudo -E nvim "
 alias ed="sudo -E nvim  /etc/nixos/configuration.nix"
