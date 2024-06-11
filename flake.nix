@@ -18,8 +18,6 @@
           ./devtools.nix 
           ./desktop_env.nix
           ./programming.nix
-          ./games.nix
-          ./cron.nix
           ./seciurity.nix
           home-manager.nixosModules.home-manager
           {

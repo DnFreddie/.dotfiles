@@ -2,7 +2,6 @@
 {
 
  environment.systemPackages = with pkgs; [
-    minecraft
  ];
 
   programs.steam = {

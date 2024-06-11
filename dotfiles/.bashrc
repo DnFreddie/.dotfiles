@@ -22,7 +22,7 @@ alias cat="bat"
 alias vs="sudo -E nvim "
 alias ed="sudo -E nvim  /etc/nixos/configuration.nix"
 ##alias wallpaper=" ./Pictures/walppaers/.screenlayout.sh;  feh --bg-fill $HOME/Pictures/walppaers/nasa-53884.jpg;"
-alias update='sudo nixos-rebuild switch; bash "$HOME"/scripts/backup_system.sh'
+alias update='sudo nixos-rebuild switch && bash "$HOME"/scripts/backup_system.sh'
 alias cl="clear"
 alias b='source "$HOME"/scripts/bookmarks.sh'
 alias tn="tmux new-session -s \$(pwd | sed 's/.*\///g')"
@@ -72,7 +72,6 @@ v() {
         command cd "$1" && nvim .
         command cd -  >> /dev/null || exit
     else
-        # If it doesn't exist, create it as a file and then edit it with Neovim
         command  nvim "$1"
     fi
 }
@@ -100,39 +99,37 @@ ex ()
   fi
 }
 
-
-#   Cd to selected directory
 fcd() {
   local dir
-  # Find command excludes 'go' and '.cache' directories
-  dir="$(find . -maxdepth 3 -type d \( -name .cache -o -name go \) -prune -o -type d -print | fzf)"
-  
+  dir="$(find "$HOME" -maxdepth 4 -type d \( -name .cache -o -name go -o -name node_modules \) -prune -o -type d -print | fzf)"
+
   if [ -n "$dir" ]; then
     session_name=$(basename "$dir")
-    
+
     if tmux has-session -t "$session_name" 2>/dev/null; then
       echo "Attaching to existing session: $session_name"
-      tmux attach-session -t "$session_name"
+      if [ -n "$TMUX" ]; then
+        tmux switch-client -t "$session_name"
+      else
+        tmux attach-session -t "$session_name"
+      fi
     else
       echo "Creating new session: $session_name"
-      TMUX='' tmux new-session -d -s "$session_name" -c "$dir"
-      tmux attach-session -t "$session_name"
+      tmux new-session -d -s "$session_name" -c "$dir"
+      if [ -n "$TMUX" ]; then
+        tmux switch-client -t "$session_name"
+      else
+        tmux attach-session -t "$session_name"
+      fi
     fi
   else
     echo "Directory not found or not selected."
     return 1
   fi
 }
-#   Run  comamnd from nvim
-fast_command() {
-    if [ -n "$TMUX" ]; then
-        tmux split-window -v -p 30 'nvim junk.sh; rm -f junk.sh'
-    else
-        echo "You're not in a tmux session."
-        echo "Starting a new session with 'tmux'..."
-        tmux new-session -s "$(pwd | sed 's/.*\///g')"
-    fi
-}
+
+
+
 attach_to_session() {
 
     SESSION=$(tmux "ls" 2>/dev/null | fzf --height 10 | cut -d: -f1)
@@ -153,7 +150,14 @@ attach_to_session() {
         echo "No session selected!"
     fi
 }
-# Open any file
+
+
+
+
+
+
+
+#   Cd to selected directory
 open(){
     if [ -n "$1" ]; then
         xdg-open "$1"
@@ -196,40 +200,57 @@ up () {
     echo "Couldn't go up $limit dirs.";
   fi
 }
+
+
+
+remove_nonexistent_files() {
+    local index_dir="$HOME/scripts/.temp_list.txt"
+    local temp_file="/tmp/temp_list.txt"
+    
+    if [ ! -f "$index_dir" ]; then
+        echo "Index file does not exist."
+        return
+    fi
+
+    while IFS= read -r filename; do
+        if [ -f "$filename" ]; then
+            echo "$filename" >> "$temp_file"
+        fi
+    done < "$index_dir"
+
+    mv "$temp_file" "$index_dir"
+}
+
 lv() {
     local temp_md_dir="/tmp"
-    local save_dir="$HOME/Desktop"
-    if [[ "$1" == "-s" ]]; then
-        local file_to_save
-        file_to_save=$(find "$temp_md_dir" -name '*.md' 2> /dev/null | fzf --prompt="Select a note to save: ")
+    local filename
+    local index_dir="$HOME/scripts/.temp_list.txt"
 
-        if [ -n "$file_to_save" ]; then
-            mv "$file_to_save" "$save_dir/"
-            echo "Note saved to Desktop: $(basename "$file_to_save")"
-        else
-            echo "No file selected to save."
-        fi
-
-      elif [[ "$1" == "-l" ]]; then
-        local file
-        file=$(find "$temp_md_dir" "$save_dir" -name '*.md' 2> /dev/null | fzf)
-
-        if [ -n "$file" ]; then
-            nvim "$file"
-        else
-            echo "No file selected."
-        fi
-    else
-        echo -n "Enter the name for your note (without extension): "
-        read -r filename
-
-        if [[ -z "$filename" ]]; then
+    case "$1" in
+        "")
             filename="note_$(date +%Y%m%d_%H%M%S)"
-        fi
+            echo "$temp_md_dir/$filename.md" >> "$index_dir"
+            nvim "$temp_md_dir/$filename.md"
+            ;;
+            "-s")
+            [ -f "$index_dir" ] && fzf --preview='head -n 20 {}' < "$index_dir" | xargs -r -I {} mv {} ~/Desktop/ || echo "no records"
 
-        nvim "$temp_md_dir/$filename.md"
-    fi
+                ;;
+        "-l")
+            remove_nonexistent_files
+            fzf --preview='head -n 20 {}' < "$index_dir" | xargs -r nvim || echo "no records"
+            ;;
+        *)
+            nvim "/tmp/$1"
+            echo "$temp_md_dir/$1" >> "$HOME/scripts/.temp_list.txt"
+            ;;
+    esac
 }
+
+
+
+
+
 
 
 
