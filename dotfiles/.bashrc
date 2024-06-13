@@ -101,10 +101,14 @@ ex ()
 
 fcd() {
   local dir
-  dir="$(find "$HOME" -maxdepth 4 -type d \( -name .cache -o -name go -o -name node_modules \) -prune -o -type d -print | fzf)"
+  dir=$(find "$HOME" -maxdepth 4 -type d \( -name .cache -o -name go -o -name node_modules \) -prune -o -type d -print | fzf)
 
   if [ -n "$dir" ]; then
     session_name=$(basename "$dir")
+
+    if [[ "$session_name" == .* ]]; then
+      session_name="${session_name:1}"
+    fi
 
     if tmux has-session -t "$session_name" 2>/dev/null; then
       echo "Attaching to existing session: $session_name"
@@ -127,7 +131,6 @@ fcd() {
     return 1
   fi
 }
-
 
 
 attach_to_session() {

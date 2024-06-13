@@ -9,11 +9,7 @@ set incsearch
 " enable line numbers "
 
 " highlight current line "
-set cursorline
-:highlight Cursorline cterm=bold ctermbg=black
-
-
-" enable highlight search pattern "
+"enable highlight search pattern "
 
 " enable smartcase search sensitivity "
 set ignorecase
