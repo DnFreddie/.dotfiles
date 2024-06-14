@@ -16,6 +16,8 @@
 #GOlang
 #------------------------------------------------------
 
+    emacs
+    pandoc
     lua
     tcpdump
     wireshark

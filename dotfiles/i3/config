@@ -478,11 +478,12 @@ set $darkgrey		#383c4a
 set $grey		#b0b5bd
 set $mediumgrey		#8b8b8b
 set $yellowbrown	#e1b700
+set $silver	        #C0C0C0
 
 # define colors for windows:
 #class		        	border		bground		text		indicator	child_border
-client.focused		    	$lightblue	$darkblue	$white		$mediumgrey	$mediumgrey
-client.unfocused	    	$darkblue	$darkblue	$grey		$darkgrey	$darkgrey
+client.focused		    	$mediumgrey	$mediumgrey	$white		$mediumgrey	$mediumgrey
+client.unfocused	    	$black	$black	$grey		$darkgrey	$darkgrey
 client.focused_inactive		$darkblue	$darkblue	$grey		$black		$black
 client.urgent		    	$urgentred	$urgentred	$white		$yellowbrown	$yellowbrown
 
@@ -577,7 +578,9 @@ bindsym $mod+t exec --no-startup-id rofi -show window \
 #exec_always --no-startup-id autotiling --limit 2
 #exec --no-startup-id greenclip daemon>/dev/null
 #bindsym $mod+c exec --no-startup-id rofi -modi "clipboard:greenclip print" -show clipboard \
-exec --no-startup-id bash -c "sleep 3 && $HOME/Pictures/wallpapers/.screenlayout.sh"
+
+exec --no-startup-id emacs --daemon &
+
 
 #		-config ~/.config/rofi/rofidmenu.rasi
 bindsym $mod+Shift+x move scratchpad

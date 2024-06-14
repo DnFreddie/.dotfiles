@@ -57,6 +57,11 @@ bind "set vi-cmd-mode-string \1\e[1 q\e]12;cyan\a\2"
 # ------------- Functions --------------------
 
 #   Search hisstory 
+nsi(){
+nix shell nixpkgs#"$1"
+
+}
+
 hh() {
     awk '!seen[$0]++ && !/^(lv|nu |nvim|ls|cd|tn|zsh )/' ~/.bash_history | \
     fzf --tac --height 10 | \
@@ -99,6 +104,13 @@ ex ()
   fi
 }
 
+vf(){
+ local dir
+  dir=$(find "$HOME" -maxdepth 4 -type d \( -name .cache -o -name go -o -name node_modules \) -prune -o -type d -print | fzf)
+
+  v  "$dir"
+
+}
 fcd() {
   local dir
   dir=$(find "$HOME" -maxdepth 4 -type d \( -name .cache -o -name go -o -name node_modules \) -prune -o -type d -print | fzf)
