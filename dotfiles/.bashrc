@@ -236,6 +236,18 @@ remove_nonexistent_files() {
     mv "$temp_file" "$index_dir"
 }
 
+vt() {
+    local personal="$HOME/Documents/Notes/Ideas.md"
+    if [ "$1" ]; then
+        bat "$personal"
+    else
+        printf "Add your idea:\n - "
+        read -r idea
+        echo "- $idea" >> "$personal"
+    fi
+}
+
+
 lv() {
     local temp_md_dir="/tmp"
     local filename
