@@ -169,7 +169,7 @@ bindcode $mod+Shift+90 	 move container to workspace  $ws10
 ######################################
 
 # start a terminal
-bindsym $mod+Return exec --no-startup-id alacritty
+bindsym $mod+Return exec --no-startup-id xterm
 
 # kill focused window
 bindsym $mod+x kill
@@ -579,7 +579,6 @@ bindsym $mod+t exec --no-startup-id rofi -show window \
 #exec --no-startup-id greenclip daemon>/dev/null
 #bindsym $mod+c exec --no-startup-id rofi -modi "clipboard:greenclip print" -show clipboard \
 
-exec --no-startup-id emacs --daemon &
 
 
 #		-config ~/.config/rofi/rofidmenu.rasi

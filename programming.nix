@@ -8,7 +8,6 @@ vim
 wget
 shellcheck
 turso-cli
-jdk
 gradle
 nodejs
 neovim

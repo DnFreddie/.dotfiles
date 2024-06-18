@@ -12,8 +12,6 @@
     brave
     signal-desktop
     taskwarrior
-
-
   ];
 
 

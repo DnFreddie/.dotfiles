@@ -18,7 +18,6 @@
           ./devtools.nix 
           ./desktop_env.nix
           ./programming.nix
-          ./seciurity.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;

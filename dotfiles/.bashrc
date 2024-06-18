@@ -21,12 +21,14 @@ alias e="v ~/Documents/Notes/"
 alias cat="bat"
 alias vs="sudo -E nvim "
 alias ed="sudo -E nvim  /etc/nixos/configuration.nix"
+alias ct='tmux ls | grep -v "(attached)" | cut -d: -f1 | xargs -n1 tmux kill-session -t'
 ##alias wallpaper=" ./Pictures/walppaers/.screenlayout.sh;  feh --bg-fill $HOME/Pictures/walppaers/nasa-53884.jpg;"
 alias update='sudo nixos-rebuild switch && bash "$HOME"/scripts/backup_system.sh'
 alias cl="clear"
 alias b='source "$HOME"/scripts/bookmarks.sh'
 alias tn="tmux new-session -s \$(pwd | sed 's/.*\///g')"
 #alias lc="find -type f | fzf | sed 's/^..//' | tr -d '\n' | xclip -selection c"
+
 alias path='echo -e "${PATH//:/\\n}"'
 alias ls="ls --color=auto"
 alias py="python3"
@@ -36,7 +38,6 @@ alias ll='ls -lha'
 alias dp='tmux capture-pane -p -S - | nvim'
 alias diff='diff --color=auto'
 alias ip='ip --color=auto'
-alias q='~/scripts/quick_search ' 
 alias vi='vim'
 
 
@@ -62,11 +63,18 @@ nix shell nixpkgs#"$1"
 
 }
 
-hh() {
-    awk '!seen[$0]++ && !/^(lv|nu |nvim|ls|cd|tn|zsh )/' ~/.bash_history | \
-    fzf --tac --height 10 | \
-    xclip -sel clip
+ram() {
+    ps aux | awk '{print $6/1024 " MB\t\t" $11}' | sort -n
 }
+
+
+
+hh() {
+    selected_command=$(awk '!seen[$0]++ && !/^(lv|nu |nvim|ls|cd|tn|zsh )/' ~/.bash_history | fzf --tac --height 10)
+    echo "$selected_command"
+    echo "$selected_command" | xclip -sel clip
+}
+
 
 v() {
     if [ -z "$1" ]; then

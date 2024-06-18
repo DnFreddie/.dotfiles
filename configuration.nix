@@ -77,9 +77,9 @@
 
 
   };
-    nixpkgs.config.permittedInsecurePackages = [
-                "electron-25.9.0"
-              ];
+ #   nixpkgs.config.permittedInsecurePackages = [
+  #              "electron-25.9.0"
+   #           ];
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget

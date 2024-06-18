@@ -26,7 +26,7 @@
     # feel free to add your own or remove some of them
 
     # archives
-    obsidian
+    #obsidian
     zip
     xz
     unzip
