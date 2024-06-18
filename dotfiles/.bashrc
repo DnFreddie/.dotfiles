@@ -17,11 +17,12 @@ shopt -s cdspell
 set show-mode-in-prompt on
 # ------------- Aliases --------------------
 alias t="task"
+alias gt="gh issue list"
 alias e="v ~/Documents/Notes/"
 alias cat="bat"
 alias vs="sudo -E nvim "
 alias ed="sudo -E nvim  /etc/nixos/configuration.nix"
-alias ct='tmux ls | grep -v "(attached)" | cut -d: -f1 | xargs -n1 tmux kill-session -t'
+alias ct='tmux ls | grep -v "(attached)" | cut -d: -f2 | xargs -n1 tmux kill-session -t'
 ##alias wallpaper=" ./Pictures/walppaers/.screenlayout.sh;  feh --bg-fill $HOME/Pictures/walppaers/nasa-53884.jpg;"
 alias update='sudo nixos-rebuild switch && bash "$HOME"/scripts/backup_system.sh'
 alias cl="clear"
@@ -52,6 +53,8 @@ bind "set show-all-if-ambiguous on"
 bind '"\C-l": clear-screen'
 bind "set vi-ins-mode-string \1\e[5 q\e]12;cyan\a\2"
 bind "set vi-cmd-mode-string \1\e[1 q\e]12;cyan\a\2"
+bind 'set bell-style none'
+
 
 
 
