@@ -71,12 +71,17 @@ ram() {
 }
 
 
-
 hh() {
-    selected_command=$(awk '!seen[$0]++ && !/^(lv|nu |nvim|ls|cd|tn|zsh )/' ~/.bash_history | fzf --tac --height 10)
-    echo "$selected_command"
-    echo "$selected_command" | xclip -sel clip
+    selected_command=$(history | awk '!seen[$0]++ && !/^(lv|nu |nvim|ls|cd|tn|zsh )/' | fzf --tac --height 10 )
+    if [ -n "$selected_command" ]; then
+        echo "$selected_command" 
+        echo "$selected_command"   | awk '{$1=""; print substr($0,2)}'| xclip -sel clip 
+    else
+        echo "No command selected."
+    fi
 }
+
+
 
 
 v() {

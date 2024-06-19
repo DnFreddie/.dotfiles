@@ -169,7 +169,7 @@ bindcode $mod+Shift+90 	 move container to workspace  $ws10
 ######################################
 
 # start a terminal
-bindsym $mod+Return exec --no-startup-id xterm
+bindsym $mod+Return exec --no-startup-id xterm -vb
 
 # kill focused window
 bindsym $mod+x kill
