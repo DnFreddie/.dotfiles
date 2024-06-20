@@ -19,10 +19,10 @@ set show-mode-in-prompt on
 alias t="task"
 alias gt="gh issue list"
 alias e="v ~/Documents/Notes/"
+alias gr="go run main.go"
 alias cat="bat"
 alias vs="sudo -E nvim "
 alias ed="sudo -E nvim  /etc/nixos/configuration.nix"
-alias ct='tmux ls | grep -v "(attached)" | cut -d: -f2 | xargs -n1 tmux kill-session -t'
 ##alias wallpaper=" ./Pictures/walppaers/.screenlayout.sh;  feh --bg-fill $HOME/Pictures/walppaers/nasa-53884.jpg;"
 alias update='sudo nixos-rebuild switch && bash "$HOME"/scripts/backup_system.sh'
 alias cl="clear"
