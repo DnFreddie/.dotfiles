@@ -1,0 +1,11 @@
+#!/bin/bash
+foo="'{print \"\\\$0\"}'"
+declare -a COMMANDS=("$foo" bar baz)
+if [[ -n $COMP_LINE ]]; then
+    for c in "${COMMANDS[@]}"; do
+        [[ ${c:0:${#2}} == "${2,,}" ]] && echo "$c" | sed 's/\\//g; s/"//g'
+    done
+    exit
+fi
+
+
