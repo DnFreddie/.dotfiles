@@ -10,7 +10,6 @@
 
   environment.systemPackages = with pkgs; [
 
-ansible
 docker-compose
 openvpn
 awscli

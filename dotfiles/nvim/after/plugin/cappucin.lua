@@ -20,3 +20,4 @@ flavour = "auto", -- latte, frappe, macchiato, mocha
 
 
 vim.cmd.colorscheme "catppuccin-mocha"
+

@@ -28,7 +28,6 @@ return require('packer').startup(function(use)
   use("preservim/tagbar")
 
   use { "catppuccin/nvim", as = "catppuccin" }
-
   use("tpope/vim-commentary")
   use('hrsh7th/cmp-nvim-lua')
   use('hrsh7th/cmp-nvim-lsp-signature-help')

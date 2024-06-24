@@ -16,12 +16,15 @@ shopt -s histverify
 shopt -s cdspell
 set show-mode-in-prompt on
 # ------------- Aliases --------------------
+#view in vim 
+alias vv="nvim  -m"
+alias vs="sudo -E nvim "
+alias vm="sudo virsh"
 alias t="task"
 alias gt="gh issue list"
 alias e="v ~/Documents/Notes/"
 alias gr="go run main.go"
 alias cat="bat"
-alias vs="sudo -E nvim "
 alias ed="sudo -E nvim  /etc/nixos/configuration.nix"
 ##alias wallpaper=" ./Pictures/walppaers/.screenlayout.sh;  feh --bg-fill $HOME/Pictures/walppaers/nasa-53884.jpg;"
 alias update='sudo nixos-rebuild switch && bash "$HOME"/scripts/backup_system.sh'
@@ -313,6 +316,7 @@ export HISTSIZE=1000
 export HISTFILESIZE=2000
 #export LS_COLORS="*.py=03;33:*.csv=02;36:*.tar=00;31:*.go=38;5;93:*.rs=01;31:*.json=38;5;208:$LS_COLORS"
 export LS_COLORS="*.py=03;33:*.csv=02;36:*.tar=00;31:*.go=38;5;93:*.rs=01;31:*.json=38;5;208:*.nix=36;40;93:$LS_COLORS"
+
 export MANPAGER="nvim +Man!"
 export EDITOR="nvim"
 export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink

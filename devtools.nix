@@ -16,7 +16,9 @@
 #GOlang
 #------------------------------------------------------
 
+    zathura
     pandoc
+    gimp
     lua
     tcpdump
     wireshark
@@ -42,9 +44,7 @@
     fzf
     tree
     bat
-    python3
     pciutils
-    python311Packages.pynvim  
     xclip
     vifm 
     tmux

@@ -64,6 +64,9 @@ vnoremap <leader>y "+y
 " Map <C-w>f to open the current file in a new tab
 nnoremap <silent> <C-w>f :tab split<CR>
 nnoremap  <leader>fr :bro ol <CR>
+nnoremap <leader>y "+y
+vnoremap <leader>y "+y
+nnoremap <leader>Y "+Y
 
 
 " Define a function s:sink with the abort attribute
@@ -71,4 +74,4 @@ nnoremap  <leader>fr :bro ol <CR>
 " enable true colors support "
 set termguicolors
 " Vim colorscheme "
-colorscheme habamax  
+colorscheme industry

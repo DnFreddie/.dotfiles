@@ -484,7 +484,7 @@ set $silver	        #C0C0C0
 #class		        	border		bground		text		indicator	child_border
 client.focused		    	$mediumgrey	$mediumgrey	$white		$mediumgrey	$mediumgrey
 client.unfocused	    	$black	$black	$grey		$darkgrey	$darkgrey
-client.focused_inactive		$darkblue	$darkblue	$grey		$black		$black
+client.focused_inactive		$mediumgrey	$mediumgrey	$grey		$mediumgrey $black
 client.urgent		    	$urgentred	$urgentred	$white		$yellowbrown	$yellowbrown
 
 ############################################
