@@ -18,6 +18,7 @@
           ./devtools.nix 
           ./desktop_env.nix
           ./programming.nix
+          ./dynamic_binaries.nix
           home-manager.nixosModules.home-manager
           {
             home-manager.useGlobalPkgs = true;

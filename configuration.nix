@@ -110,7 +110,7 @@ hardware.nvidia.prime = {
   users.users.aura = {
     isNormalUser = true;
     description = "aura";
-    extraGroups = [ "networkmanager" "wheel" "docker" "audio" "libvirtd" ];
+    extraGroups = [ "networkmanager" "wheel" "docker" "audio" "libvirtd" "kvm" ];
     packages = with pkgs; [];
   };
 

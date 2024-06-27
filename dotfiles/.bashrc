@@ -17,12 +17,11 @@ shopt -s cdspell
 set show-mode-in-prompt on
 # ------------- Aliases --------------------
 #view in vim 
-alias vv="nvim  -m"
+alias vv='v  "$HOME"/Documents/Notes/'
 alias vs="sudo -E nvim "
 alias vm="sudo virsh"
 alias t="task"
 alias gt="gh issue list"
-alias e="v ~/Documents/Notes/"
 alias gr="go run main.go"
 alias cat="bat"
 alias ed="sudo -E nvim  /etc/nixos/configuration.nix"
@@ -30,9 +29,10 @@ alias ed="sudo -E nvim  /etc/nixos/configuration.nix"
 alias update='sudo nixos-rebuild switch && bash "$HOME"/scripts/backup_system.sh'
 alias cl="clear"
 alias b='source "$HOME"/scripts/bookmarks.sh'
-alias tn="tmux new-session -s \$(pwd | sed 's/.*\///g')"
+#alias tn="tmux new-session -s \$(pwd | sed 's/.*\///g')"
 #alias lc="find -type f | fzf | sed 's/^..//' | tr -d '\n' | xclip -selection c"
 
+alias grep='grep --color=auto'
 alias path='echo -e "${PATH//:/\\n}"'
 alias ls="ls --color=auto"
 alias py="python3"
@@ -130,9 +130,12 @@ vf(){
   v  "$dir"
 
 }
+
 fcd() {
   local dir
-  dir=$(find "$HOME" -maxdepth 4 -type d \( -name .cache -o -name go -o -name node_modules \) -prune -o -type d -print | fzf)
+  dir=$(find "$HOME" -maxdepth 2 -type d \( -name .cache -o -name go -o -name node_modules \) -prune -o -type d -print | sed "s|^$HOME/||" | fzf)
+
+  echo "$dir"
 
   if [ -n "$dir" ]; then
     session_name=$(basename "$dir")
@@ -150,7 +153,12 @@ fcd() {
       fi
     else
       echo "Creating new session: $session_name"
-      tmux new-session -d -s "$session_name" -c "$dir"
+      if [ "$dir" == "$HOME" ]; then
+        tmux new-session -d -s "$session_name"
+      else
+        tmux new-session -d -s "$session_name" -c "$HOME/$dir"
+      fi
+
       if [ -n "$TMUX" ]; then
         tmux switch-client -t "$session_name"
       else
@@ -162,7 +170,6 @@ fcd() {
     return 1
   fi
 }
-
 
 attach_to_session() {
 
@@ -370,7 +377,10 @@ getDeep() {
     fi
 }
 
-PS1="\u\[\e[35m\]${debian_chroot:+(\$debian_chroot)─}${VIRTUAL_ENV:+(\$(basename \$VIRTUAL_ENV))─}[\[\e[36m\]\w\[\e[35m\]]\$(git_branch)\n└─\[\e[33m\]\$(getDeep)\[\e[0m\]"
+#V1
+#PS1="\u\[\e[35m\]${debian_chroot:+(\$debian_chroot)─}${VIRTUAL_ENV:+(\$(basename \$VIRTUAL_ENV))─}[\[\e[36m\]\w\[\e[35m\]]\$(git_branch)\n└─\[\e[33m\]\$(getDeep)\[\e[0m\]"
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+PS1="\u\[\e[35m\]${debian_chroot:+(\$debian_chroot)─}${VIRTUAL_ENV:+(\$(basename \$VIRTUAL_ENV))─}[\[\e[36m\]\w\[\e[35m\]]\$(git_branch)\n\[\e[33m\]\$(getDeep)\[\e[0m\]"
     #PS1=" \u \[\e[35m\]${debian_chroot:+(\$debian_chroot)─}${VIRTUAL_ENV:+(\$(basename \$VIRTUAL_ENV))─}[\[\e[36m\]\w\[\e[35m\]]\$(git_branch)\n└─\[\e[33m\]\$(getDeep)\[\e[0m\]"
     #PS1="\[\e[35;5;208m\]\u${debian_chroot:+(\$debian_chroot)─}${VIRTUAL_ENV:+(\$(basename \$VIRTUAL_ENV))─}[\[\e[36m\]\w\[\e[38;5;208m\]]\$(git_branch)\n└─\[\e[33m\]\$\[\e[0m\]"
 
