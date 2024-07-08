@@ -64,8 +64,8 @@ new_window pixel 0
 floating_modifier $mod
 
 # switch/iterate between workspaces
-bindsym $mod+Tab workspace next
-bindsym $mod+Shift+Tab workspace prev
+#bindsym $mod+Tab workspace next
+#bindsym $mod+Shift+Tab workspace prev
 
 # switch to workspace
 bindsym $mod+1    workspace  $ws1
@@ -115,6 +115,10 @@ bindsym $mod+Shift+8    move container to workspace  $ws8
 bindsym $mod+Shift+9    move container to workspace  $ws9
 bindsym $mod+Shift+0    move container to workspace  $ws10
 
+bindsym mod4+1 move container to workspace $ws1; workspace $ws1
+bindsym mod4+2 move container to workspace $ws2; workspace $ws2
+bindsym mod4+3 move container to workspace $ws3; workspace $ws3
+bindsym mod4+4 move container to workspace $ws4; workspace $ws4
 # move focused container to workspace with numpad keys
 bindcode $mod+Shift+Mod2+87 	move container to workspace  $ws1
 bindcode $mod+Shift+Mod2+88 	move container to workspace  $ws2
@@ -178,7 +182,7 @@ bindsym $mod+x kill
 
 # Lock the system
 # lock with a picture:
-bindsym mod4+l exec --no-startup-id i3lock -i   ~/Pictures/walppaers/dark-cat-rosewater.png -t -e -f
+bindsym mod4+l exec --no-startup-id i3lock -i   ~/Pictures/walppaers/rockyL.png -t -e -f
 # lock by blurring the screen:
 #bindsym mod4+l exec --no-startup-id ~/.config/i3/scripts/blur-lock
 
@@ -188,7 +192,7 @@ bindsym $mod+Shift+r reload
 # restart i3 inplace (preserves your layout/session, can be used to update i3)
 
 # keybinding in fancy rofi (automated):
-bindsym F1 exec --no-startup-id ~/.config/i3/scripts/keyhint-2
+#bindsym F1 exec --no-startup-id ~/.config/i3/scripts/keyhint-2
 # alternative
 # keybinding list in editor:
 # bindsym $mod+F1 exec --no-startup-id xed ~/.config/i3/keybindings
@@ -202,8 +206,8 @@ bindsym XF86MonBrightnessDown exec --no-startup-id ~/.config/i3/scripts/volume_b
 
 # change focus
 bindsym $mod+j focus left
-bindsym $mod+o focus down
-bindsym $mod+b focus up
+#bindsym $mod+o focus down
+#bindsym $mod+b focus up
 bindsym $mod+k focus right
 
 # alternatively, you can use the cursor keys:
@@ -213,10 +217,10 @@ bindsym $mod+Up focus up
 bindsym $mod+Right focus right
 
 # move focused window
-bindsym $mod+Shift+k move left
-bindsym $mod+Shift+b move up
-bindsym $mod+Shift+o move down
-bindsym $mod+Shift+j move right
+#bindsym $mod+Shift+k move left
+#bindsym $mod+Shift+b move up
+#bindsym $mod+Shift+o move down
+#bindsym $mod+Shift+j move right
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Shift+Left move left
@@ -363,7 +367,7 @@ exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 # if enabled you should comment welcome app.
 # https://github.com/jceb/dex
 #exec --no-startup-id dex -a -s /etc/xdg/autostart/:~/.config/autostart/
-exec --no-startup-id dex --autostart --environment i3
+#exec --no-startup-id dex --autostart --environment i3
 
 # start welcome app
 #exec --no-startup-id sh /usr/share/endeavouros/scripts/welcome --startdelay=3 

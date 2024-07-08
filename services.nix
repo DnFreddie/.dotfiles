@@ -13,6 +13,11 @@ services.pipewire = {
   #jack.enable = true;
 };
 
+#services.emacs = {
+#    enable = true;
+#    package = pkgs.emacs; 
+#
+#  };
 
 
 services.tlp = {
@@ -64,7 +69,7 @@ services.tlp = {
 
 
 fonts.packages = with pkgs; [
-     (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" "Hack" ]; })
+     (nerdfonts.override { fonts = [ "FiraCode" "DroidSansMono" "Hack" "JetBrainsMono" ]; })
     comic-relief
     font-awesome_6
     fira
@@ -75,6 +80,7 @@ fonts.packages = with pkgs; [
   environment.systemPackages = with pkgs; [
 pavucontrol
 thermald
+alsa-utils
 
   ];
 }

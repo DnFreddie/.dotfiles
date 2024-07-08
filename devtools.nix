@@ -16,10 +16,10 @@
 #GOlang
 #------------------------------------------------------
 
-    zathura
+    sshpass
     gitleaks
+    ispell
     pandoc
-    gimp
     lua
     tcpdump
     wireshark
@@ -30,6 +30,7 @@
     shellcheck
     pgcli
     brave
+    chromium
     signal-desktop
     gnumake
     at

@@ -26,7 +26,7 @@ return require('packer').startup(function(use)
   use 'ray-x/go.nvim'
   use 'ray-x/guihua.lua'
   use("preservim/tagbar")
-
+  use("tpope/vim-fugitive")
   use { "catppuccin/nvim", as = "catppuccin" }
   use("tpope/vim-commentary")
   use('hrsh7th/cmp-nvim-lua')

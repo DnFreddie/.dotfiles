@@ -17,6 +17,7 @@ shopt -s cdspell
 set show-mode-in-prompt on
 # ------------- Aliases --------------------
 #view in vim 
+alias zg="zig run -I . src/main.zig -lc"
 alias vv='v  "$HOME"/Documents/Notes/'
 alias vs="sudo -E nvim "
 alias vm="sudo virsh"
@@ -25,6 +26,8 @@ alias gt="gh issue list"
 alias gr="go run main.go"
 alias cat="bat"
 alias ed="sudo -E nvim  /etc/nixos/configuration.nix"
+alias fcl="fc -l"
+
 ##alias wallpaper=" ./Pictures/walppaers/.screenlayout.sh;  feh --bg-fill $HOME/Pictures/walppaers/nasa-53884.jpg;"
 alias update='sudo nixos-rebuild switch && bash "$HOME"/scripts/backup_system.sh'
 alias cl="clear"
@@ -36,7 +39,6 @@ alias grep='grep --color=auto'
 alias path='echo -e "${PATH//:/\\n}"'
 alias ls="ls --color=auto"
 alias py="python3"
-alias tn="attach_to_session"
 alias la="ls -a"
 alias ll='ls -lha'
 alias dp='tmux capture-pane -p -S - | nvim'
@@ -75,10 +77,11 @@ ram() {
 
 
 hh() {
-    selected_command=$(history | awk '!seen[$0]++ && !/^(lv|nu |nvim|ls|cd|tn|zsh )/' | fzf --tac --height 10 )
+    local selected_command
+    selected_command=$(history | awk '!seen[$0]++ && !/^(lv|nu |nvim|ls|cd|tn|zsh|v|fcd |vf|vs)/' | awk '{$1=""; print substr($0,2)}'| fzf --tac  --layout=reverse )
     if [ -n "$selected_command" ]; then
         echo "$selected_command" 
-        echo "$selected_command"   | awk '{$1=""; print substr($0,2)}'| xclip -sel clip 
+        echo "$selected_command"   | xclip -sel clip 
     else
         echo "No command selected."
     fi
@@ -86,6 +89,7 @@ hh() {
 
 
 
+# ------------- V commands --------------------
 
 v() {
     if [ -z "$1" ]; then
@@ -100,6 +104,155 @@ v() {
     fi
 }
 
+vt() {
+    local personal="$HOME/Documents/Notes/Ideas.md"
+    if [ "$1" ]; then
+        bat "$personal"
+    else
+        printf "Add your idea:\n - "
+        read -r idea
+        echo "- $idea" >> "$personal"
+    fi
+}
+
+
+vf(){
+ local dir
+
+  dir=$(find "$HOME" -maxdepth 2 -type d \( -name .cache -o -name go -o -name node_modules \) -prune -o -type d -print | sed "s|^$HOME/||" | fzf --layout=reverse)
+  v  "$HOME/$dir"
+
+}
+
+vl() {
+    local temp_md_dir="/tmp"
+    local filename
+    local index_dir="$HOME/scripts/.temp_list.txt"
+
+    case "$1" in
+        "")
+            filename="note_$(date +%Y%m%d_%H%M%S)"
+            echo "$temp_md_dir/$filename.md" >> "$index_dir"
+            nvim "$temp_md_dir/$filename.md"
+            ;;
+            "-s")
+            [ -f "$index_dir" ] && fzf  --layout=reverse --preview='head -n 20 {}' < "$index_dir" | xargs -r -I {} mv {} ~/Desktop/ || echo "no records"
+
+                ;;
+        "-l")
+            remove_nonexistent_files
+            fzf --layout=reverse --preview='head -n 20 {}' < "$index_dir" | xargs -r nvim || echo "no records"
+            ;;
+        *)
+            nvim "/tmp/$1"
+            echo "$temp_md_dir/$1" >> "$HOME/scripts/.temp_list.txt"
+            ;;
+    esac
+}
+
+remove_nonexistent_files() {
+    local index_dir="$HOME/scripts/.temp_list.txt"
+    local temp_file="/tmp/temp_list.txt"
+    
+    if [ ! -f "$index_dir" ]; then
+        echo "Index file does not exist."
+        return
+    fi
+
+    while IFS= read -r filename; do
+        if [ -f "$filename" ]; then
+            echo "$filename" >> "$temp_file"
+        fi
+    done < "$index_dir"
+
+    mv "$temp_file" "$index_dir"
+}
+# ------------- fc commands --------------------
+
+fcs(){
+
+ local selected_host   
+ local session_name
+ selected_host=$(grep -oP '^(?:Host)\s+\K\w+' "$HOME/.ssh/config" | fzf  --layout=reverse)
+
+if [ -n "$selected_host" ]; then
+  session_name="ssh@$selected_host"
+
+  if [ -n "$TMUX" ]; then
+    tmux new-session -d -A -s "$session_name" -n "ssh" "ssh $selected_host"
+    tmux switch-client -t "$session_name"
+  else
+    tmux new-session -d -A -s "$session_name" -n "ssh" "ssh $selected_host"
+    tmux attach-session -t "$session_name"
+  fi
+else
+  echo "No host selected."
+fi
+
+
+}
+fcd() {
+  local dir
+  dir=$(find "$HOME" -maxdepth 2 -type d \( -name .cache -o -name go -o -name node_modules \) -prune -o -type d -print | sed "s|^$HOME/||" | fzf --layout=reverse)
+  local session_name
+
+  if [ -n "$dir" ]; then
+    session_name=$(basename "$dir")
+
+    if [[ "$session_name" == .* ]]; then
+      session_name="${session_name:1}"
+    fi
+
+    if tmux has-session -t "$session_name" 2>/dev/null; then
+      echo "Attaching to existing session: $session_name" > /dev/null
+      if [ -n "$TMUX" ]; then
+        tmux switch-client -t "$session_name"
+      else
+        tmux attach-session -t "$session_name"
+      fi
+    else
+      echo "Creating new session: $session_name" > /dev/null
+      if [ "$dir" == "$HOME" ]; then
+        tmux new-session -d -s "$session_name"
+      else
+        tmux new-session -d -s "$session_name" -c "$HOME/$dir"
+      fi
+
+      if [ -n "$TMUX" ]; then
+        tmux switch-client -t "$session_name"
+      else
+        tmux attach-session -t "$session_name"
+      fi
+    fi
+  else
+    echo "Directory not found or not selected."
+    return 1
+  fi
+}
+
+
+#---------------Utilites-----------------------
+tn() {
+
+    local SESSION 
+    SESSION=$(tmux "ls" 2>/dev/null | fzf --layout=reverse | cut -d: -f1)
+
+
+    if [ -n "$SESSION" ]; then
+
+        if [ -n "$TMUX" ]; then
+            tmux switch-client -t "$SESSION"
+        else
+            tmux attach-session -t "$SESSION"
+        fi
+
+    elif [ -z "$TMUX" ]; then
+       
+        tmux new-session -s "$(basename "$(pwd)")"
+    else
+        echo "No session selected!"
+    fi
+}
  #  Extract most know archives with one command
 ex ()
 {
@@ -123,90 +276,15 @@ ex ()
   fi
 }
 
-vf(){
- local dir
-  dir=$(find "$HOME" -maxdepth 4 -type d \( -name .cache -o -name go -o -name node_modules \) -prune -o -type d -print | fzf)
 
-  v  "$dir"
-
-}
-
-fcd() {
-  local dir
-  dir=$(find "$HOME" -maxdepth 2 -type d \( -name .cache -o -name go -o -name node_modules \) -prune -o -type d -print | sed "s|^$HOME/||" | fzf)
-
-  echo "$dir"
-
-  if [ -n "$dir" ]; then
-    session_name=$(basename "$dir")
-
-    if [[ "$session_name" == .* ]]; then
-      session_name="${session_name:1}"
-    fi
-
-    if tmux has-session -t "$session_name" 2>/dev/null; then
-      echo "Attaching to existing session: $session_name"
-      if [ -n "$TMUX" ]; then
-        tmux switch-client -t "$session_name"
-      else
-        tmux attach-session -t "$session_name"
-      fi
-    else
-      echo "Creating new session: $session_name"
-      if [ "$dir" == "$HOME" ]; then
-        tmux new-session -d -s "$session_name"
-      else
-        tmux new-session -d -s "$session_name" -c "$HOME/$dir"
-      fi
-
-      if [ -n "$TMUX" ]; then
-        tmux switch-client -t "$session_name"
-      else
-        tmux attach-session -t "$session_name"
-      fi
-    fi
-  else
-    echo "Directory not found or not selected."
-    return 1
-  fi
-}
-
-attach_to_session() {
-
-    SESSION=$(tmux "ls" 2>/dev/null | fzf --height 10 | cut -d: -f1)
-
-
-    if [ -n "$SESSION" ]; then
-
-        if [ -n "$TMUX" ]; then
-            tmux switch-client -t "$SESSION"
-        else
-            tmux attach-session -t "$SESSION"
-        fi
-
-    elif [ -z "$TMUX" ]; then
-       
-        tmux new-session -s "$(basename "$(pwd)")"
-    else
-        echo "No session selected!"
-    fi
-}
-
-
-
-
-
-
-
-#   Cd to selected directory
 open(){
     if [ -n "$1" ]; then
         xdg-open "$1"
     else
-    xdg-open "$(find  . -type f | fzf)"
+    xdg-open "$(find  . -type f | fzf --layout=reverse)"
     fi
 }
-# Add to the path
+
 pathappend() {
     for arg in "$@"; do
         test -d "$arg" || continue
@@ -221,98 +299,6 @@ pathappend() {
         export PATH="${PATH}${PATH:+":$arg"}"
     done
 } && export -f pathappend
-
-
-up () {
-  local d=""
-  local limit="$1"
-
-  # Default to limit of 1
-  if [ -z "$limit" ] || [ "$limit" -le 0 ]; then
-    limit=1
-  fi
-
-  for ((i=1;i<=limit;i++)); do
-    d="../$d"
-  done
-
-  # perform cd. Show error if cd fails
-  if ! cd "$d"; then
-    echo "Couldn't go up $limit dirs.";
-  fi
-}
-
-
-
-remove_nonexistent_files() {
-    local index_dir="$HOME/scripts/.temp_list.txt"
-    local temp_file="/tmp/temp_list.txt"
-    
-    if [ ! -f "$index_dir" ]; then
-        echo "Index file does not exist."
-        return
-    fi
-
-    while IFS= read -r filename; do
-        if [ -f "$filename" ]; then
-            echo "$filename" >> "$temp_file"
-        fi
-    done < "$index_dir"
-
-    mv "$temp_file" "$index_dir"
-}
-
-vt() {
-    local personal="$HOME/Documents/Notes/Ideas.md"
-    if [ "$1" ]; then
-        bat "$personal"
-    else
-        printf "Add your idea:\n - "
-        read -r idea
-        echo "- $idea" >> "$personal"
-    fi
-}
-
-
-lv() {
-    local temp_md_dir="/tmp"
-    local filename
-    local index_dir="$HOME/scripts/.temp_list.txt"
-
-    case "$1" in
-        "")
-            filename="note_$(date +%Y%m%d_%H%M%S)"
-            echo "$temp_md_dir/$filename.md" >> "$index_dir"
-            nvim "$temp_md_dir/$filename.md"
-            ;;
-            "-s")
-            [ -f "$index_dir" ] && fzf --preview='head -n 20 {}' < "$index_dir" | xargs -r -I {} mv {} ~/Desktop/ || echo "no records"
-
-                ;;
-        "-l")
-            remove_nonexistent_files
-            fzf --preview='head -n 20 {}' < "$index_dir" | xargs -r nvim || echo "no records"
-            ;;
-        *)
-            nvim "/tmp/$1"
-            echo "$temp_md_dir/$1" >> "$HOME/scripts/.temp_list.txt"
-            ;;
-    esac
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #------------- Exports --------------------
 # avoid duplicates..
@@ -361,16 +347,14 @@ configure_prompt() {
             fi
         fi
     }
+
 getDeep() {
-    # Determine the current shell depth
     local deepness=$SHLVL
 
-    # Adjust deepness if inside tmux
     if [ -n "$TMUX" ]; then
         deepness=$((deepness - 1))
     fi
 
-    # Display logic
     if [ "$deepness" -eq 1 ]; then
         echo "$"
     else echo "${deepness}$"
