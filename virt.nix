@@ -10,6 +10,7 @@
 
   environment.systemPackages = with pkgs; [
  kubernetes
+ vagrant
  kubevirt
 cloud-init
 cdrkit

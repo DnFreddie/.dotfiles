@@ -9,7 +9,7 @@ vim.opt.expandtab = true
 
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
-vim.opt.relativenumber = true
+vim.opt.relativenumber = false
 
 vim.opt.smartindent = true
 ---vim.api.nvim_set_var('netrw_keepdir', 0)

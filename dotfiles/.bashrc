@@ -20,7 +20,6 @@ set show-mode-in-prompt on
 alias zg="zig run -I . src/main.zig -lc"
 alias vv='v  "$HOME"/Documents/Notes/'
 alias vs="sudo -E nvim "
-alias vm="sudo virsh"
 alias t="task"
 alias gt="gh issue list"
 alias gr="go run main.go"
@@ -115,6 +114,24 @@ vt() {
     fi
 }
 
+vm() {
+    sudo -v
+    local selected_vm
+    selected_vm=$(sudo virsh  list --state-shutoff | awk 'NR > 1 && $2 != "" {print $2}' | fzf)
+    if [ -n "$selected_vm" ]; then
+  sudo virsh start  "$selected_vm" 
+
+else
+  echo "No VM selected."
+fi
+
+
+
+
+
+
+
+}
 
 vf(){
  local dir

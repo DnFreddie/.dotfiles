@@ -15,8 +15,9 @@
   environment.systemPackages = with pkgs; [
 #GOlang
 #------------------------------------------------------
-
+    libreoffice
     sshpass
+    drawio
     gitleaks
     ispell
     pandoc
