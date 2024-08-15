@@ -136,7 +136,7 @@ fi
 vf(){
  local dir
 
-  dir=$(find "$HOME" -maxdepth 2 -type d \( -name .cache -o -name go -o -name node_modules \) -prune -o -type d -print | sed "s|^$HOME/||" | fzf --layout=reverse)
+  dir=$(find "$HOME" -maxdepth 3 -type d \( -name .cache -o -name go -o -name node_modules \) -prune -o -type d -print | sed "s|^$HOME/||" | fzf --layout=reverse)
   v  "$HOME/$dir"
 
 }
@@ -210,7 +210,7 @@ fi
 }
 fcd() {
   local dir
-  dir=$(find "$HOME" -maxdepth 2 -type d \( -name .cache -o -name go -o -name node_modules \) -prune -o -type d -print | sed "s|^$HOME/||" | fzf --layout=reverse)
+  dir=$(find "$HOME" -maxdepth 4 -type d \( -name .cache -o -name go -o -name node_modules \) -prune -o -type d -print | sed "s|^$HOME/||" | fzf --layout=reverse)
   local session_name
 
   if [ -n "$dir" ]; then
@@ -246,6 +246,37 @@ fcd() {
     return 1
   fi
 }
+
+
+
+fcg() {
+    REPO=$(gh repo list | awk '{print $1}' | fzf)
+
+    if [ -n "$REPO" ]; then
+        LOCAL_PATH="$HOME/github.com/$REPO"
+
+        if [ ! -d "$LOCAL_PATH" ]; then
+            gh repo clone "$REPO" "$LOCAL_PATH"
+        else
+            cd "$LOCAL_PATH" || return
+        fi
+
+        if tmux has-session -t "$REPO" 2>/dev/null; then
+            if [ -n "$TMUX" ]; then
+                tmux switch-client -t "$REPO"
+            else
+                tmux attach-session -t "$REPO"
+            fi
+        else
+            tmux new-session -s "$REPO" -d
+            tmux send-keys -t "$REPO" "cd $LOCAL_PATH" C-m
+            tmux attach-session -t "$REPO";
+        fi
+    else
+        echo "No repository selected."
+    fi
+}
+
 
 
 #---------------Utilites-----------------------
@@ -392,13 +423,11 @@ PS1="\u\[\e[35m\]${debian_chroot:+(\$debian_chroot)─}${VIRTUAL_ENV:+(\$(basena
 
 configure_prompt
 
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 
-# Turso
-export PATH="/home/aura/.turso:$PATH"
-      if [ -n "$TMUX" ]; then
-        eval "$(direnv hook bash)";
+. "$HOME/.cargo/env"
 
-        fi
-
-
-export PATH="$HOME/go/bin/:$PATH"
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

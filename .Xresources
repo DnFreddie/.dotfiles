@@ -1,4 +1,7 @@
-xterm*faceName: JetBrains Mono:size=17
+! xterm*faceName: JetBrains Mono:size=15 
+XTerm.vt100.faceName: Monospace::antialias=true:size=15
+XTerm.vt100.locale: false
+XTerm.vt100.utf8: true
 XTerm*selectToClipboard:true
 XTerm*SaveLines: 2000
 XTerm*rightScrollBar: flase
@@ -30,3 +33,12 @@ XTerm*vt100.translations: #override \n\
 *.color14:    #9AEDFE
 *.color7:     #BFBFBF
 *.color15:    #E6E6E6
+
+ XTerm.vt100.scaleHeight: 1.01
+! disable bold font faces, instead make text light blue.
+XTerm.vt100.colorBDMode: true
+XTerm.vt100.colorBD: rgb:82/a4/d3
+! disable underlined text, instead make it white.
+XTerm.vt100.colorULMode: true
+XTerm.vt100.colorUL: rgb:e4/e4/e4
+! similarly use colorIT for italics

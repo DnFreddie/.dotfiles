@@ -34,4 +34,14 @@ vim.opt.isfname:append("@-@")
 vim.opt.updatetime = 50
 
 
+-- Highlight on yank
+vim.api.nvim_create_augroup("YankHighlight", { clear = true })
+vim.api.nvim_create_autocmd("TextYankPost", {
+    group = "YankHighlight",
+    pattern = "*",
+    callback = function()
+        vim.highlight.on_yank { higroup = 'Visual', timeout = 300 }
+    end,
+})
+
 
