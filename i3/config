@@ -173,7 +173,8 @@ bindcode $mod+Shift+90 	 move container to workspace  $ws10
 ######################################
 
 # start a terminal
-bindsym $mod+Return exec --no-startup-id xterm -vb
+bindsym $mod+Return exec --no-startup-id xterm 
+#-vb
 
 # kill focused window
 bindsym $mod+x kill
@@ -182,7 +183,7 @@ bindsym $mod+x kill
 
 # Lock the system
 # lock with a picture:
-bindsym mod4+l exec --no-startup-id i3lock -i   ~/Pictures/walppaers/rockyL.png -t -e -f
+bindsym mod4+l exec --no-startup-id i3lock -i   ~/Pictures/wallpapers/rockyL.png -t -e -f && systemctl suspend
 # lock by blurring the screen:
 #bindsym mod4+l exec --no-startup-id ~/.config/i3/scripts/blur-lock
 
@@ -285,7 +286,8 @@ bindsym XF86AudioPrev exec --no-startup-id playerctl previous
 
 ## App shortcuts
 #bindsym Print exec --no-startup-id scrot ~/%Y-%m-%d-%T-screenshot.png && notify-send "Screenshot saved to ~/$(date +"%Y-%m-%d-%T")-screenshot.png"
-bindsym Mod4+p exec flameshot gui 
+bindsym Mod4+p exec flatpak run org.flameshot.Flameshot gui
+
 # Power Profiles menu switcher (rofi)
 #bindsym $mod+Shift+p exec --no-startup-id ~/.config/i3/scripts/power-profiles
 
@@ -387,7 +389,9 @@ exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
 
 # set wallpaper
 # exec --no-startup-id sleep 2 && nitrogen --restore
-exec --no-startup-id sleep 1 && feh --bg-fill $HOME/Pictures/walppaers/nasa-53884.jpg
+#exec --no-startup-id sleep 1 && feh --bg-fill $HOME/Pictures/walppaers/nasa-53884.jpg
+exec --no-startup-id xsetroot -solid "#00000"
+
 
 # set powersavings for display:
 exec --no-startup-id xset s 480 dpms 600 600 600

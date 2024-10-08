@@ -1,5 +1,13 @@
 #Check if we are running interactively
 [[ $- != *i* ]] && return
+# Enable programmable completion features
+   if ! shopt -oq posix; then
+     if [ -f /usr/share/bash-completion/bash_completion ]; then
+       . /usr/share/bash-completion/bash_completion
+     elif [ -f /etc/bash_completion ]; then
+       . /etc/bash_completion
+     fi
+   fi
 # ------------- Options --------------------
 set -o vi
 shopt -s checkwinsize
@@ -11,29 +19,22 @@ shopt -s direxpand
 shopt -s dirspell
 shopt -s dotglob 
 shopt -s lithist
+shopt -s progcomp
 shopt -s gnu_errfmt
 shopt -s histverify
 shopt -s cdspell
-set show-mode-in-prompt on
+
 # ------------- Aliases --------------------
 #view in vim 
-alias zg="zig run -I . src/main.zig -lc"
-alias vv='v  "$HOME"/Documents/Notes/'
 alias vs="sudo -E nvim "
-alias t="task"
-alias gt="gh issue list"
-alias gr="go run main.go"
+alias es="emacs -nw"
 alias cat="bat"
 alias ed="sudo -E nvim  /etc/nixos/configuration.nix"
-alias fcl="fc -l"
-
 ##alias wallpaper=" ./Pictures/walppaers/.screenlayout.sh;  feh --bg-fill $HOME/Pictures/walppaers/nasa-53884.jpg;"
 alias update='sudo nixos-rebuild switch && bash "$HOME"/scripts/backup_system.sh'
 alias cl="clear"
-alias b='source "$HOME"/scripts/bookmarks.sh'
 #alias tn="tmux new-session -s \$(pwd | sed 's/.*\///g')"
 #alias lc="find -type f | fzf | sed 's/^..//' | tr -d '\n' | xclip -selection c"
-
 alias grep='grep --color=auto'
 alias path='echo -e "${PATH//:/\\n}"'
 alias ls="ls --color=auto"
@@ -48,27 +49,25 @@ alias vi='vim'
 
 
 
-# # ------------- Complitions --------------------
-bind 'TAB:menu-complete'
+# # ------------- Binds --------------------
 # owncomp=(awk)
 # for i in ${owncomp[@]};do complete -C '$HOME/scripts/snippets/$i' $i;done
-bind "set completion-ignore-case on"
-bind "set show-all-if-ambiguous on"
 bind '"\C-l": clear-screen'
-bind "set vi-ins-mode-string \1\e[5 q\e]12;cyan\a\2"
-bind "set vi-cmd-mode-string \1\e[1 q\e]12;cyan\a\2"
+#bind "set vi-ins-mode-string \1\e[5 q\e]12;cyan\a\2"
+#bind "set vi-cmd-mode-string \1\e[1 q\e]12;cyan\a\2"
 bind 'set bell-style none'
+bind "set show-all-if-ambiguous on"
+bind "set completion-ignore-case on"
+bind "set menu-complete-display-prefix on"
+bind '"\e[Z": menu-complete-backward'
+bind '"\t": menu-complete'
+
 
 
 
 
 # ------------- Functions --------------------
 
-#   Search hisstory 
-nsi(){
-nix shell nixpkgs#"$1"
-
-}
 
 ram() {
     ps aux | awk '{print $6/1024 " MB\t\t" $11}' | sort -n
@@ -77,7 +76,8 @@ ram() {
 
 hh() {
     local selected_command
-    selected_command=$(history | awk '!seen[$0]++ && !/^(lv|nu |nvim|ls|cd|tn|zsh|v|fcd |vf|vs)/' | awk '{$1=""; print substr($0,2)}'| fzf --tac  --layout=reverse )
+    tac $HISTFILE | awk '!x[$0]++' | tac | sponge $HISTFILE
+    selected_command=$(history | awk '!seen[$0]++ && !/^(lv|nu |nvim|ls|cd|tn|zsh|v|fcd |vf|vs)/' | awk '{$1=""; print substr($0,2)}'|uniq| fzf --tac  --layout=reverse )
     if [ -n "$selected_command" ]; then
         echo "$selected_command" 
         echo "$selected_command"   | xclip -sel clip 
@@ -91,29 +91,16 @@ hh() {
 # ------------- V commands --------------------
 
 v() {
-    if [ -z "$1" ]; then
-        command nvim .
-    elif [ -f "$1" ]; then
-        command nvim "$1"
-    elif [ -d "$1" ]; then
-        command cd "$1" && nvim .
-        command cd -  >> /dev/null || exit
-    else
-        command  nvim "$1"
-    fi
+    if [ "$#" -eq 1 ];then # 
+  if test -d $1;then 
+    nvim $1 +':cd %'
+  else 
+    nvim $1 +':cd %:h'
+  fi
+else 
+  nvim 
+fi
 }
-
-vt() {
-    local personal="$HOME/Documents/Notes/Ideas.md"
-    if [ "$1" ]; then
-        bat "$personal"
-    else
-        printf "Add your idea:\n - "
-        read -r idea
-        echo "- $idea" >> "$personal"
-    fi
-}
-
 vm() {
     sudo -v
     local selected_vm
@@ -124,12 +111,6 @@ vm() {
 else
   echo "No VM selected."
 fi
-
-
-
-
-
-
 
 }
 
@@ -349,17 +330,18 @@ pathappend() {
 } && export -f pathappend
 
 #------------- Exports --------------------
-# avoid duplicates..
-export HISTCONTROL=ignoredups:erasedups
-# After each command, save and reload history
+
 export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
+#export PROMPT_COMMAND='tac "$HISTFILE" | awk "!x[\$0]++" | tac | sponge "$HISTFILE"'
+
+export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=1000
-export HISTFILESIZE=2000
-#export LS_COLORS="*.py=03;33:*.csv=02;36:*.tar=00;31:*.go=38;5;93:*.rs=01;31:*.json=38;5;208:$LS_COLORS"
+export HISTFILESIZE=10000
 export LS_COLORS="*.py=03;33:*.csv=02;36:*.tar=00;31:*.go=38;5;93:*.rs=01;31:*.json=38;5;208:*.nix=36;40;93:$LS_COLORS"
 
 export MANPAGER="nvim +Man!"
 export EDITOR="nvim"
+
 export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
 export LESS_TERMCAP_md=$'\E[1;36m'     # begin bold
 export LESS_TERMCAP_me=$'\E[0m'        # reset bold/blink
@@ -369,21 +351,12 @@ export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
 export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
 
 
-#------------- Source --------------------
-
-
-
-
-
-
-
-
-
-
 #------------- Prompt --------------------
-# Source files
+#V1
 configure_prompt() {
     ##local prompt_symbol='Λ'
+
+
 
     git_branch() {
         local branch
@@ -409,25 +382,50 @@ getDeep() {
     fi
 }
 
-#V1
-#PS1="\u\[\e[35m\]${debian_chroot:+(\$debian_chroot)─}${VIRTUAL_ENV:+(\$(basename \$VIRTUAL_ENV))─}[\[\e[36m\]\w\[\e[35m\]]\$(git_branch)\n└─\[\e[33m\]\$(getDeep)\[\e[0m\]"
-#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-PS1="\u\[\e[35m\]${debian_chroot:+(\$debian_chroot)─}${VIRTUAL_ENV:+(\$(basename \$VIRTUAL_ENV))─}[\[\e[36m\]\w\[\e[35m\]]\$(git_branch)\n\[\e[33m\]\$(getDeep)\[\e[0m\]"
-    #PS1=" \u \[\e[35m\]${debian_chroot:+(\$debian_chroot)─}${VIRTUAL_ENV:+(\$(basename \$VIRTUAL_ENV))─}[\[\e[36m\]\w\[\e[35m\]]\$(git_branch)\n└─\[\e[33m\]\$(getDeep)\[\e[0m\]"
-    #PS1="\[\e[35;5;208m\]\u${debian_chroot:+(\$debian_chroot)─}${VIRTUAL_ENV:+(\$(basename \$VIRTUAL_ENV))─}[\[\e[36m\]\w\[\e[38;5;208m\]]\$(git_branch)\n└─\[\e[33m\]\$\[\e[0m\]"
 
 
 
 }
 
+PS1="\u\[\e[35m\]${debian_chroot:+(\$debian_chroot)─}${VIRTUAL_ENV:+(\$(basename \$VIRTUAL_ENV))─}[\[\e[36m\]\w\[\e[35m\]]\$(git_branch)\n\[\e[33m\]\$(getDeep)\[\e[0m\]"
 
+#------------- Source --------------------
+setup_environment() {
+    # Go-related settings
+    export GOPATH=$HOME/go
+    export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+    export PATH="$PATH:$HOME/.local/bin/"
+    export PATH=$PATH:$HOME/.local/bin/
+
+    # Cargo (Rust) setup
+    if [ -f "$HOME/.cargo/env" ]; then
+        . "$HOME/.cargo/env"
+    fi
+
+    # NVM (Node Version Manager) setup
+    export NVM_DIR="$HOME/.nvm"
+    if [ -s "$NVM_DIR/nvm.sh" ]; then
+        . "$NVM_DIR/nvm.sh"  # This loads nvm
+    fi
+    if [ -s "$NVM_DIR/bash_completion" ]; then
+        . "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+    fi
+
+    # Terraform autocomplete
+    if command -v terraform &> /dev/null; then
+        complete -C /usr/bin/terraform terraform
+    fi
+
+    # Bash completion
+}
+
+setup_environment
 configure_prompt
 
-export GOPATH=$HOME/go
-export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 
-. "$HOME/.cargo/env"
+unset -f setup_environment
+unset -f configure_prompt
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# Things added atuomaticly 
+#----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
