@@ -53,21 +53,13 @@ alias vi='vim'
 # owncomp=(awk)
 # for i in ${owncomp[@]};do complete -C '$HOME/scripts/snippets/$i' $i;done
 bind '"\C-l": clear-screen'
-#bind "set vi-ins-mode-string \1\e[5 q\e]12;cyan\a\2"
-#bind "set vi-cmd-mode-string \1\e[1 q\e]12;cyan\a\2"
 bind 'set bell-style none'
 bind "set show-all-if-ambiguous on"
 bind "set completion-ignore-case on"
 bind "set menu-complete-display-prefix on"
 bind '"\e[Z": menu-complete-backward'
 bind '"\t": menu-complete'
-
-
-
-
-
 # ------------- Functions --------------------
-
 
 ram() {
     ps aux | awk '{print $6/1024 " MB\t\t" $11}' | sort -n
@@ -230,28 +222,33 @@ fcd() {
 
 
 
+
 fcg() {
     REPO=$(gh repo list | awk '{print $1}' | fzf)
-
     if [ -n "$REPO" ]; then
         LOCAL_PATH="$HOME/github.com/$REPO"
-
         if [ ! -d "$LOCAL_PATH" ]; then
             gh repo clone "$REPO" "$LOCAL_PATH"
-        else
-            cd "$LOCAL_PATH" || return
         fi
+        
+        SESSION_NAME=$(basename "$REPO" | tr -cd '[:alnum:]-')
 
-        if tmux has-session -t "$REPO" 2>/dev/null; then
+        
+        if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
+            # Session exists, switch to it
             if [ -n "$TMUX" ]; then
-                tmux switch-client -t "$REPO"
+                tmux switch-client -t "$SESSION_NAME"
             else
-                tmux attach-session -t "$REPO"
+                tmux attach-session -t "$SESSION_NAME"
             fi
         else
-            tmux new-session -s "$REPO" -d
-            tmux send-keys -t "$REPO" "cd $LOCAL_PATH" C-m
-            tmux attach-session -t "$REPO";
+            tmux new-session -s "$SESSION_NAME" -c "$LOCAL_PATH" -d
+            if [ -n "$TMUX" ]; then
+                tmux switch-client -t "$SESSION_NAME"
+            else
+                # Outside tmux: attach to the new session
+                tmux attach-session -t "$SESSION_NAME"
+            fi
         fi
     else
         echo "No repository selected."
