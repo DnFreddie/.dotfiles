@@ -259,25 +259,34 @@ fcg() {
 
 #---------------Utilites-----------------------
 tn() {
-
     local SESSION 
-    SESSION=$(tmux "ls" 2>/dev/null | fzf --layout=reverse | cut -d: -f1)
+    case $1 in
+        -c )
+            SESSION=$(pwd | sed 's/.*\///g')
+            if tmux has-session -t "$SESSION" 2>/dev/null; then
+                [ -n "$TMUX" ] && tmux switch-client -t "$SESSION" || tmux attach-session -t "$SESSION"
+            else
+                [ -n "$TMUX" ] && tmux new-session -d -s "$SESSION" && tmux switch-client -t "$SESSION" || tmux new-session -s "$SESSION"
+            fi
+            return
+            ;;
+    esac
+    
+    if ! tmux ls >/dev/null 2>&1; then
+        # No sessions create a new one
 
+        SESSION=$(pwd | sed 's/.*\///g')
+        [ -n "$TMUX" ] && tmux new-session -d -s "$SESSION" && tmux switch-client -t "$SESSION" || tmux new-session -s "$SESSION"
+        return
+    fi
 
+    SESSION=$(tmux ls | fzf --layout=reverse | cut -d: -f1)
     if [ -n "$SESSION" ]; then
-
-        if [ -n "$TMUX" ]; then
-            tmux switch-client -t "$SESSION"
-        else
-            tmux attach-session -t "$SESSION"
-        fi
-
-    elif [ -z "$TMUX" ]; then
-       
-        tmux new-session -s "$(basename "$(pwd)")"
+        [ -n "$TMUX" ] && tmux switch-client -t "$SESSION" || tmux attach-session -t "$SESSION"
     else
         echo "No session selected!"
     fi
+
 }
  #  Extract most know archives with one command
 ex ()
