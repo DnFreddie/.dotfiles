@@ -357,4 +357,3 @@ nnoremap a :create<space>
 " Color scheme
 colorscheme Default
 
-source /home/aura/.config/vifm/vifm_devicons/favicons.vifm
