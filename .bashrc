@@ -221,41 +221,49 @@ fcd() {
 }
 
 
-
-
 fcg() {
-    REPO=$(gh repo list | awk '{print $1}' | fzf)
-    if [ -n "$REPO" ]; then
-        LOCAL_PATH="$HOME/github.com/$REPO"
-        if [ ! -d "$LOCAL_PATH" ]; then
-            gh repo clone "$REPO" "$LOCAL_PATH"
-        fi
-        
-        SESSION_NAME=$(basename "$REPO" | tr -cd '[:alnum:]-')
-
-        
-        if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
-            # Session exists, switch to it
-            if [ -n "$TMUX" ]; then
-                tmux switch-client -t "$SESSION_NAME"
-            else
-                tmux attach-session -t "$SESSION_NAME"
-            fi
+    if [ -z "$1" ]; then
+        # No URL provided, use existing GitHub repo selection
+        REPO=$(gh repo list | awk '{print $1}' | fzf)
+        if [ -n "$REPO" ]; then
+            FULL_URL="https://github.com/$REPO"
         else
-            tmux new-session -s "$SESSION_NAME" -c "$LOCAL_PATH" -d
-            if [ -n "$TMUX" ]; then
-                tmux switch-client -t "$SESSION_NAME"
-            else
-                # Outside tmux: attach to the new session
-                tmux attach-session -t "$SESSION_NAME"
-            fi
+            echo "No repository selected."
+            return 1
         fi
     else
-        echo "No repository selected."
+        FULL_URL="$1"
+    fi
+
+    REPO_FULL_NAME=$(echo "$FULL_URL" | sed -E 's|https?://github.com/||' | sed 's/\.git$//')
+    OWNER=$(echo "$REPO_FULL_NAME" | cut -d'/' -f1)
+    REPO_NAME=$(echo "$REPO_FULL_NAME" | cut -d'/' -f2)
+
+    LOCAL_PATH="$HOME/github.com/$OWNER/$REPO_NAME"
+
+    if [ ! -d "$LOCAL_PATH" ]; then
+        mkdir -p "$(dirname "$LOCAL_PATH")"
+        git clone "$FULL_URL" "$LOCAL_PATH"
+    fi
+
+    SESSION_NAME=$(echo "$REPO_NAME" | tr -cd '[:alnum:]-')
+
+    if tmux has-session -t "$SESSION_NAME" 2>/dev/null; then
+
+        if [ -n "$TMUX" ]; then
+            tmux switch-client -t "$SESSION_NAME"
+        else
+            tmux attach-session -t "$SESSION_NAME"
+        fi
+    else
+        tmux new-session -s "$SESSION_NAME" -c "$LOCAL_PATH" -d
+        if [ -n "$TMUX" ]; then
+            tmux switch-client -t "$SESSION_NAME"
+        else
+            tmux attach-session -t "$SESSION_NAME"
+        fi
     fi
 }
-
-
 
 #---------------Utilites-----------------------
 tn() {

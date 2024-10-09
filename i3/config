@@ -592,7 +592,7 @@ bindsym $mod+t exec --no-startup-id rofi -show window \
 #		-config ~/.config/rofi/rofidmenu.rasi
 bindsym $mod+Shift+x move scratchpad
 #bindsym mod4+f [instance="thunar"] scratchpad show
-bindsym $mod+q [instance="brave"] scratchpad show
+bindsym $mod+q [instance="chromium-browser"] scratchpad show
 #bindsym mod4+q [instance="keepassxc"] scratchpad show
 #bindsym mod4+w [instance="emacs"] scratchpad show
 
