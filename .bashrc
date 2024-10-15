@@ -27,6 +27,7 @@ shopt -s cdspell
 # ------------- Aliases --------------------
 #view in vim 
 alias vs="sudo -E nvim "
+alias gitl=" git log -n 5 --graph --decorate --oneline"
 alias es="emacs -nw"
 alias cat="bat"
 alias ed="sudo -E nvim  /etc/nixos/configuration.nix"
@@ -66,10 +67,23 @@ ram() {
 }
 
 
+less() {
+    if [ $# -eq 0 ]; then
+        /usr/bin/less
+    elif [ -d "$1" ]; then
+        ls -alF "$1" | /usr/bin/less
+
+    elif [ -f "$1" ]; then
+         /usr/bin/bat "$1"
+    else
+       eval "$@" | /usr/bin/less  
+    fi
+}
+
 hh() {
     local selected_command
     tac $HISTFILE | awk '!x[$0]++' | tac | sponge $HISTFILE
-    selected_command=$(history | awk '!seen[$0]++ && !/^(lv|nu |nvim|ls|cd|tn|zsh|v|fcd |vf|vs)/' | awk '{$1=""; print substr($0,2)}'|uniq| fzf --tac  --layout=reverse )
+    selected_command=$(history | awk '!seen[$0]++ && !/^(lv|nu |nvim|ls|cd|tn|zsh|v|fd |vf|vs)/' | awk '{$1=""; print substr($0,2)}'|uniq| fzf --tac  --layout=reverse )
     if [ -n "$selected_command" ]; then
         echo "$selected_command" 
         echo "$selected_command"   | xclip -sel clip 
@@ -181,7 +195,7 @@ fi
 
 
 }
-fcd() {
+fd() {
   local dir
   dir=$(find "$HOME" -maxdepth 4 -type d \( -name .cache -o -name go -o -name node_modules \) -prune -o -type d -print | sed "s|^$HOME/||" | fzf --layout=reverse)
   local session_name
@@ -221,7 +235,7 @@ fcd() {
 }
 
 
-fcg() {
+gitc() {
     if [ -z "$1" ]; then
         # No URL provided, use existing GitHub repo selection
         REPO=$(gh repo list | awk '{print $1}' | fzf)
@@ -406,10 +420,11 @@ PS1="\u\[\e[35m\]${debian_chroot:+(\$debian_chroot)─}${VIRTUAL_ENV:+(\$(basena
 #------------- Source --------------------
 setup_environment() {
     # Go-related settings
-    export GOPATH=$HOME/go
-    export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+    export GOPATH="$HOME/go"
+    export PATH="$PATH:$GOROOT/bin:$GOPATH/bin"
     export PATH="$PATH:$HOME/.local/bin/"
-    export PATH=$PATH:$HOME/.local/bin/
+    export PATH="$PATH:$HOME/.local/bin/"
+    export PATH="$PATH:$HOME/scripts/"
 
     # Cargo (Rust) setup
     if [ -f "$HOME/.cargo/env" ]; then
