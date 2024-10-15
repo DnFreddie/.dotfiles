@@ -60,6 +60,7 @@ vim.api.nvim_set_keymap('n', '<C-p>', '', {
 
 vim.api.nvim_set_keymap('n', '<Leader>cc', ': belowright Compile<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>cr', ': belowright Recompile<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<Leader>cq', ':windo if &buftype == "quickfix" || bufname("%") =~ "compilation" | close | endif<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>cn', ': NextError<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>cp', ': :PrevError<CR>', { noremap = true, silent = true })
 
