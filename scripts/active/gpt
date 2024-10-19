@@ -1,0 +1,23 @@
+#!/bin/bash
+
+set -e
+
+query=""
+
+if [ "$#" -gt 0 ]; then
+  query="$*"
+fi
+
+if [ ! -t 0 ]; then
+  if [ -n "$query" ]; then
+    query="$query $(cat)"
+  else
+    query=$(cat)
+  fi
+fi
+
+base_command='tgpt --provider duckduckgo'
+
+full_command="$base_command \"$query\""
+
+eval "$full_command"

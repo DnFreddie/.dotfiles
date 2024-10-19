@@ -1,0 +1,91 @@
+#!/bin/bash
+
+format_prettier() {
+  local prettier_bin="$HOME/.fmt/node_modules/prettier/bin/prettier.cjs"
+  local prettier_config="$HOME/.fmt/.prettierrc"
+
+  cd "$HOME/.fmt/" || {
+    printf "Failed to change directory.\n"
+    exit 1
+  }
+  if "$prettier_bin" \
+    --config "$prettier_config" \
+    -w "$1"; then
+    pretty_print "$1"
+  else
+    printf "Failed to format with Prettier: '%s'.\n" "$1"
+  fi
+}
+pretty_print() {
+  printf "\n\033[0;34m%s\033[0m \033[0;32mhas been formatted\033[0m\n" "$(basename "$1")"
+}
+format_local() {
+  local target_path="$1"
+  local filename
+  local format
+
+  if [[ ! -s "$target_path" ]]; then
+    printf "Skipping file: '%s': file not found or is empty.\n" "$target_path"
+    return
+  fi
+
+  filename=$(basename -- "$target_path")
+
+  if [[ "$filename" == *.* ]]; then
+    format="${filename##*.}"
+  else
+    # capture #!/bin/{*}
+    format="$(head -n 1 "$target_path" | perl -p -e 's/^#!.*\/(\w+)$/$1/; s/\d//g;')"
+  fi
+
+  case "$format" in
+    bash)
+      format_prettier "$target_path"
+      ;;
+    python | py)
+      if black "$target_path"; then
+        pretty_print "$target_path"
+      else
+        printf "Failed to format Python file: '%s'.\n" "$target_path"
+      fi
+      ;;
+    perl | pl)
+      if perltidy -b -bext='/' "$target_path"; then
+        pretty_print "$target_path"
+      else
+        printf "Failed to format Perl file: '%s'.\n" "$target_path"
+      fi
+      ;;
+    *)
+      format_prettier "$target_path"
+      ;;
+  esac
+}
+
+main() {
+  local target
+
+  if [[ -z "$1" ]]; then
+    printf "No arguments provided.\n"
+    exit 1
+  fi
+
+  target="${1//\"/}"
+  if [[ -d "$target" ]] || [[ -f "$target" ]]; then
+    target="$(realpath "$target")"
+  else
+    target="$(realpath "$(pwd)/$target")"
+  fi
+
+  if [[ -d "$target" ]]; then
+    export -f format_local
+    find "$target" -type f -print0 \
+      | xargs -0 -I {} -P 4 bash -c 'format_local "$@"' _ {}
+    unset -f format_local
+  else
+    format_local "$target"
+  fi
+}
+
+set -e
+main "$@"
