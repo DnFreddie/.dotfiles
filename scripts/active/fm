@@ -1,5 +1,8 @@
-#!/bin/bash
+#!/usr/bin/bash
 
+pretty_print() {
+  printf "\n\033[0;34m%s\033[0m \033[0;32mhas been formatted\033[0m\n" "$(basename "$1")"
+}
 format_prettier() {
   local prettier_bin="$HOME/.fmt/node_modules/prettier/bin/prettier.cjs"
   local prettier_config="$HOME/.fmt/.prettierrc"
@@ -16,9 +19,6 @@ format_prettier() {
     printf "Failed to format with Prettier: '%s'.\n" "$1"
   fi
 }
-pretty_print() {
-  printf "\n\033[0;34m%s\033[0m \033[0;32mhas been formatted\033[0m\n" "$(basename "$1")"
-}
 format_local() {
   local target_path="$1"
   local filename
@@ -34,8 +34,9 @@ format_local() {
   if [[ "$filename" == *.* ]]; then
     format="${filename##*.}"
   else
-    # capture #!/bin/{*}
-    format="$(head -n 1 "$target_path" | perl -p -e 's/^#!.*\/(\w+)$/$1/; s/\d//g;')"
+    # capture #!/usr/bin/{*}
+    format="$(head -n 1 "$target_path" | perl -p -e 's/^#!.*\/(\w+)(?:.*)?$/$1/; s/\d//g;')"
+
   fi
 
   case "$format" in
@@ -79,9 +80,13 @@ main() {
 
   if [[ -d "$target" ]]; then
     export -f format_local
+    export -f format_prettier
+    export -f pretty_print
     find "$target" -type f -print0 \
       | xargs -0 -I {} -P 4 bash -c 'format_local "$@"' _ {}
     unset -f format_local
+    unset -f format_pretter
+    unset -f format_print
   else
     format_local "$target"
   fi

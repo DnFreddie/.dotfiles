@@ -134,3 +134,26 @@ hi StatusLineNC ctermbg=8 ctermfg=7 guibg=#808080 guifg=darkgrey
 if exists("g:colors_name")
   execute "colorscheme " . g:colors_name
 endif
+
+
+function! RunOnVisual() range
+    let saved_reg = getreg('a')
+    normal! gv"ay
+
+    let selected_text = getreg('a')
+
+    call setreg('a', saved_reg)
+
+    let command = input('Command to run: ', '', 'shellcmd')
+    if empty(command)
+        return
+    endif
+    let output = system(command, selected_text)
+
+    let output = substitute(output, '\n$', '', '')
+
+    execute 'normal! gv"_c' . escape(output, '\|')
+endfunction
+
+xnoremap f :<C-U>call RunOnVisual()<CR>
+

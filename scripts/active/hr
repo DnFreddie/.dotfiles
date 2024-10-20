@@ -1,0 +1,13 @@
+#!/usr/bin/bash
+
+set -e
+if [[ -t 0 ]]; then
+  [[ -n "$*" ]] || exit 1
+  input="$*"
+else
+  read -r input
+fi
+
+printf -v sep '%.0s-' {1..15}
+
+printf '#%s%s%s\n' "$sep" "$input" "$sep"

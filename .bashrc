@@ -28,8 +28,9 @@ shopt -s gnu_errfmt
 shopt -s histverify
 shopt -s cdspell
 
-# ------------- Aliases --------------------
+#---------------Aliases---------------
 alias vs="sudo -E nvim "
+alias "?"="gpt"
 alias gitl=" git log -n 5 --graph --decorate --oneline"
 alias cat="bat"
 alias cl="clear"
@@ -43,9 +44,10 @@ alias ll='ls -lha'
 alias dp='tmux capture-pane -p -S - | nvim'
 alias diff='diff --color=auto'
 alias ip='ip --color=auto'
-alias vi='vim'
+#alias vi='vim'
+alias files='nautilus'
 
-# # ------------- Binds --------------------
+#---------------Binds---------------
 # owncomp=(awk)
 # for i in ${owncomp[@]};do complete -C '$HOME/scripts/snippets/$i' $i;done
 bind '"\C-l": clear-screen'
@@ -55,8 +57,8 @@ bind "set completion-ignore-case on"
 bind "set menu-complete-display-prefix on"
 bind '"\e[Z": menu-complete-backward'
 bind '"\t": menu-complete'
-# ------------- Functions --------------------
 
+#---------------Functions---------------
 ram() {
   ps aux | awk '{print $6/1024 " MB\t\t" $11}' | sort -n
 }
@@ -96,32 +98,20 @@ hh() {
 
 }
 
-# ------------- V commands --------------------
+#---------------Editor Commands---------------
 
-v() {
+vi() {
   if [ "$#" -eq 1 ]; then
-    if test -d "$1"; then
-      nvim "$HOME/$1" +":cd %:p:h" +"Explore"
+    if [ -d "$1" ]; then
+      nvim "$1" +":cd $1" +"Explore"
     else
-      nvim "$1" +':cd %:h'
+      nvim "$1" +"cd $(dirname "$1")"
     fi
   else
-    nvim . +":cd %:p:h" +"Explore"
+    nvim . +":cd ." +"Explore"
   fi
 }
 
-# vm() {
-#     sudo -v
-#     local selected_vm
-#     selected_vm=$(sudo virsh  list --state-shutoff | awk 'NR > 1 && $2 != "" {print $2}' | fzf)
-#     if [ -n "$selected_vm" ]; then
-#   sudo virsh start  "$selected_vm"
-
-# else
-#   echo "No VM selected."
-# fi
-
-# }
 
 tn() {
 
@@ -140,11 +130,17 @@ tn() {
 
   printf "Select:\n"
   mapfile -t sessions_array < <(tmux list-sessions)
-  for i in "${!sessions_array[@]}"; do
 
-    printf "%d %s\n" "$((i + 1))" "${sessions_array[$i]}"
+  for i in "${!sessions_array[@]}"; do
+    session_name="${sessions_array[$i]%%:*}"
+    session_description="${sessions_array[$i]#*:}"
+
+    printf "\033[38;2;181;126;220m%d.\033[0m " "$((i + 1))"
+    printf "\033[1;38;2;150;150;170m%s\033[0m " "$session_name"
+    printf "\033[38;2;120;120;120m%s\033[0m\n" "$session_description"
 
   done
+
   printf ":"
 
   read -r choice
@@ -204,18 +200,19 @@ pathappend() {
   done
 } && export -f pathappend
 
-#------------- Exports --------------------
+#------------- Bash settings --------------------
 
 export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 
 export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=10000
 export HISTFILESIZE=10000
-export LS_COLORS="*.py=03;33:*.csv=02;36:*.tar=00;31:*.go=38;5;93:*.rs=01;31:*.json=38;5;208:*.nix=36;40;93:$LS_COLORS"
+export LS_COLORS="*.py=04;33:*.csv=02;36:*.tar=00;31:*.go=38;5;93:*.rs=01;31:*.json=38;5;208:*.nix=36;40;93:$LS_COLORS"
 
 export MANPAGER="nvim +Man!"
 export EDITOR="nvim"
 export LAB="$HOME/github.com/DnFreddie/"
+export JUNK="$HOME/.junk/"
 
 export LESS_TERMCAP_mb=$'\E[1;38;2;245;194;231m'             # Pink
 export LESS_TERMCAP_md=$'\E[1;38;2;137;180;250m'             # Blue
@@ -225,7 +222,7 @@ export LESS_TERMCAP_ue=$'\E[0m'                              # Reset underline
 export LESS_TERMCAP_so=$'\E[38;2;17;17;27;48;2;243;139;168m' # Red search highlighting
 export LESS_TERMCAP_se=$'\E[0m'                              # Reset search highlighting
 
-#------------- Prompt --------------------
+#---------------Prompt---------------
 configure_prompt() {
 
   git_branch() {
@@ -257,14 +254,14 @@ configure_prompt() {
 
 }
 
-#------------- Source --------------------
+#---------------Setup env---------------
 setup_environment() {
   # Go-related settings
-  export GOPATH="$HOME/go"
+  export GOPATH="$HOME/.go"
   export PATH="$PATH:$GOROOT/bin:$GOPATH/bin"
   export PATH="$PATH:$HOME/.local/bin/"
   export PATH="$PATH:$HOME/.local/bin/"
-  export PATH="$PATH:$HOME/scripts/"
+  export PATH="$PATH:$HOME/scripts/active/"
 
   # Cargo (Rust) setup
   if [ -f "$HOME/.cargo/env" ]; then

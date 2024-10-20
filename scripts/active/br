@@ -1,0 +1,42 @@
+#!/usr/bin/bash
+
+set -e
+if [[ -z "$1" ]]; then
+  exit 0
+fi
+
+bracket="$1"
+
+if [[ -t 0 ]]; then
+  shift
+  contents="$*"
+fi
+
+if [[ ! -t 0 ]]; then
+  read -r contents
+fi
+
+case "$bracket" in
+  "(" | ")" | "b")
+    printf "(%s)\n" "$contents"
+    ;;
+  "{" | "}" | "sb")
+    printf "{%s}\n" "$contents"
+    ;;
+  "[" | "]")
+    printf "[%s]\n" "$contents"
+    ;;
+  "‘" | "’" | "q")
+    printf "‘%s’\n" "$contents"
+    ;;
+  "#")
+    printf "#%s\n" "$contents"
+    ;;
+  "s")
+    printf '"%s"\n' "$contents"
+    ;;
+  *)
+    printf "%s%s%s\n" "$bracket" "$contents" "$bracket"
+    ;;
+
+esac

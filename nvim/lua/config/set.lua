@@ -1,4 +1,3 @@
-
 vim.opt.nu = false
 vim.opt.relativenumber = false
 
@@ -12,7 +11,6 @@ vim.opt.smartcase = true
 
 vim.opt.smartindent = true
 ---vim.api.nvim_set_var('netrw_keepdir', 0)
-
 
 vim.opt.wrap = false
 
@@ -32,16 +30,15 @@ vim.opt.isfname:append("@-@")
 
 vim.opt.updatetime = 50
 
-
 -- Highlight on yank
 vim.api.nvim_create_augroup("YankHighlight", { clear = true })
 vim.api.nvim_create_autocmd("TextYankPost", {
-    group = "YankHighlight",
-    pattern = "*",
-    callback = function()
-        vim.highlight.on_yank { higroup = 'Visual', timeout = 300 }
-    end,
+	group = "YankHighlight",
+	pattern = "*",
+	callback = function()
+		vim.highlight.on_yank{
+			higroup = "Visual",
+			timeout = 300,
+		}
+	end,
 })
-
-
-
