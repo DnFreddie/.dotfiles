@@ -1,0 +1,45 @@
+# W3m color configuration file
+# Save this as ~/.w3m/color
+
+anchor           green
+attrvalue        cyan
+back             black
+bg              black
+black           black
+blue            blue
+bold            blue
+cyan            cyan
+form            blue
+green           green
+img             magenta
+link            green
+mark            cyan
+magenta         magenta
+normal          white
+red             red
+white           white
+yellow          yellow
+
+# Special elements
+anchor_visited   magenta
+frame           green
+header          yellow
+select          blue
+title           yellow
+status          yellow
+
+# Menu colors
+menu.fg         white
+menu.bg         black
+menu.active.fg  yellow
+menu.active.bg  black
+
+# Message colors
+message.fg      white
+message.bg      black
+message.error   red
+message.quote   green
+
+# Search colors
+search.fg       black
+search.bg       yellow

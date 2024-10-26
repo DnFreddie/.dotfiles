@@ -1,0 +1,54 @@
+# Move to 15th link without opening it (fixed)
+keymap f COMMAND "RESHAPE ; LINK_BEGIN ; MOVE_NEXT 15"
+
+# Open the current link (follow link)
+keymap l GOTO_LINK
+
+# Navigate links (like vim)
+keymap j NEXT_LINK
+keymap k PREV_LINK
+
+# Go to the first link
+keymap gg BEGIN
+
+# Go to the last link
+keymap G END
+
+# Page scrolling
+keymap C-f NEXT_PAGE
+keymap C-b PREV_PAGE
+keymap C-d NEXT_HALF_PAGE
+keymap C-u PREV_HALF_PAGE
+
+# Line navigation
+keymap 0 LINE_BEGIN
+keymap $ LINE_END
+
+# Word navigation
+keymap w NEXT_WORD
+keymap b PREV_WORD
+
+# Tabs management
+keymap t NEW_TAB
+keymap d CLOSE_TAB
+keymap K PREV_TAB
+keymap J NEXT_TAB
+
+# History navigation
+keymap h BACK
+
+# Search and navigation through results
+keymap / SEARCH
+keymap n SEARCH_NEXT
+keymap N SEARCH_PREV
+
+# Other commands
+keymap o GOTO
+keymap O LOAD
+keymap y EXTERN
+keymap Y EXTERN_LINK
+keymap c COMMAND
+keymap r RELOAD
+keymap q QUIT
+keymap ZZ QUIT
+
