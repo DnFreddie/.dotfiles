@@ -50,13 +50,17 @@ format_local() {
         printf "Failed to format Python file: '%s'.\n" "$target_path"
       fi
       ;;
-    perl | pl)
+    perl | pl | pm)
       if perltidy -b -bext='/' "$target_path"; then
         pretty_print "$target_path"
       else
         printf "Failed to format Perl file: '%s'.\n" "$target_path"
-      fi
-      ;;
+      fi ;;
+     mark | md)
+
+         tmpfile=$(mktemp).md && pandoc "$target_path" -t gfm --standalone -o "$tmpfile" && mv "$tmpfile" "$target_path" 
+
+         ;;
     *)
       format_prettier "$target_path"
       ;;
@@ -79,14 +83,11 @@ main() {
   fi
 
   if [[ -d "$target" ]]; then
-    export -f format_local
-    export -f format_prettier
-    export -f pretty_print
-    find "$target" -type f -print0 \
-      | xargs -0 -I {} -P 4 bash -c 'format_local "$@"' _ {}
-    unset -f format_local
-    unset -f format_pretter
-    unset -f format_print
+
+    while IFS= read -r -d '' file; do
+      format_local "$file" &
+    done < <(find "$target" -type f -print0)
+    wait
   else
     format_local "$target"
   fi

@@ -1,0 +1,46 @@
+#!/bin/bash
+set -e
+
+if [[ -z "$1" ]]; then
+  exit 0
+fi
+bracket="$1"
+
+process_line() {
+  local line="$1"
+  case "$bracket" in
+    "(" | ")" | "b")
+      printf "(%s)\n" "$line"
+      ;;
+    "{" | "}" | "sb")
+      printf "{%s}\n" "$line"
+      ;;
+    "[" | "]")
+      printf "[%s]\n" "$line"
+      ;;
+    "‘" | "’" | "q")
+      printf "‘%s’\n" "$line"
+      ;;
+    "#")
+      printf "#%s\n" "$line"
+      ;;
+    "s")
+      printf '"%s"\n' "$line"
+      ;;
+    *)
+      printf "%s%s%s\n" "$bracket" "$line" "$bracket"
+      ;;
+  esac
+}
+
+if [[ -t 0 ]]; then
+  shift
+  for line in "$@"; do
+    process_line "$line"
+  done
+else
+  while IFS= read -r line || [[ -n $line ]]; do
+    process_line "$line"
+  done
+fi
+

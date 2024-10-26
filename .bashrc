@@ -29,9 +29,12 @@ shopt -s histverify
 shopt -s cdspell
 
 #---------------Aliases---------------
+alias "??"="w3m 'https://lite.duckduckgo.com/lite/?q='\""
+alias pf="pandoc -f markdown -t gfm"
 alias vs="sudo -E nvim "
 alias "?"="gpt"
-alias gitl=" git log -n 5 --graph --decorate --oneline"
+alias gitl="git log -n 5 --graph --decorate --oneline"
+alias issue="gh issue create"
 alias cat="bat"
 alias cl="clear"
 #alias tn="tmux new-session -s \$(pwd | sed 's/.*\///g')"
@@ -40,11 +43,13 @@ alias path='echo -e "${PATH//:/\\n}"'
 alias ls="ls --color=auto"
 alias py="python3"
 alias la="ls -a"
+alias pie="perl -p -i -e"
+alias gp="perl -n -e"
 alias ll='ls -lha'
 alias dp='tmux capture-pane -p -S - | nvim'
 alias diff='diff --color=auto'
 alias ip='ip --color=auto'
-#alias vi='vim'
+alias vi='vim'
 alias files='nautilus'
 
 #---------------Binds---------------
@@ -100,7 +105,7 @@ hh() {
 
 #---------------Editor Commands---------------
 
-vi() {
+v() {
   if [ "$#" -eq 1 ]; then
     if [ -d "$1" ]; then
       nvim "$1" +":cd $1" +"Explore"
@@ -115,7 +120,14 @@ vi() {
 
 tn() {
 
-  tcreate() { if [ -z "$TMUX" ]; then tmux new -As "$1"; else tmux detach -E "tmux new -A -s '$1'"; fi; }
+tcreate() { 
+    if [ -z "$TMUX" ]; then 
+        cd "$2" && tmux new -As "$1"; 
+    else 
+        tmux detach -E "cd '$2' && tmux new -A -s '$1'"; 
+    fi 
+}
+
 
   case $1 in
     -c)
@@ -200,6 +212,12 @@ pathappend() {
   done
 } && export -f pathappend
 
+
+# Add to your ~/.bashrc or ~/.zshrc
+ddg() {
+    local search="${*// /+}"  # Replace spaces with +
+    w3m -o confirm_qq=false  "https://lite.duckduckgo.com/lite?q=$search"
+}
 #------------- Bash settings --------------------
 
 export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
@@ -261,7 +279,7 @@ setup_environment() {
   export PATH="$PATH:$GOROOT/bin:$GOPATH/bin"
   export PATH="$PATH:$HOME/.local/bin/"
   export PATH="$PATH:$HOME/.local/bin/"
-  export PATH="$PATH:$HOME/scripts/active/"
+  export PATH="$PATH:$HOME/scripts/"
 
   # Cargo (Rust) setup
   if [ -f "$HOME/.cargo/env" ]; then
@@ -280,5 +298,5 @@ configure_prompt
 unset -f setup_environment
 unset -f configure_prompt
 
-# Things added atuomaticly
+# Things added automatically
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -9,10 +9,11 @@ sub indexDir {
 
     my $startDir = "/home/rocky/github.com/DnFreddie/Notes/content/posts/";
 
-    # Untaint the directory path by 
-    if ($startDir =~ m{^(/[\w\-/\.]+)$}) {
-        $startDir = $1;  
-    } else {
+    # Untaint the directory path
+    if ( $startDir =~ m{^(/[\w\-/\.]+)$} ) {
+        $startDir = $1;
+    }
+    else {
         die "Invalid directory path: $startDir";
     }
 
@@ -22,16 +23,17 @@ sub indexDir {
 
     my @files;
     find(
-        { 
+        {
             wanted => sub {
-                return if -d $_;  # Skip directories
+                return if -d $_;
+
                 # Untaint the file path before using it
-                if ($File::Find::name =~ m{^(.*)$}) {
+                if ( $File::Find::name =~ m{^(.*)$} ) {
                     my $untainted_file = $1;
                     push @files, $untainted_file;
                 }
             },
-            no_chdir => 1  # Disable chdir to avoid taint issues
+            no_chdir => 1
         },
         $startDir
     );
@@ -39,16 +41,19 @@ sub indexDir {
     my @mapArray;
     for my $file (@files) {
         my $file_name = File::Basename::basename($file);
-        $file_name =~ s/\..*$//; 
+        $file_name =~ s/\..*$//;
 
-        my ($relative_path) = $file =~ m!(posts/.*)!; 
+        my ($relative_path) = $file =~ m!(posts/.*)!;
 
         if ( !defined $relative_path ) {
             warn "Could not find 'posts/' in path: $file\n";
             next;
         }
 
-        if ( $file_name =~ /$filter/i ) {  
+        if ( $file_name =~ /$filter/i ) {
+
+            $file_name =~ s/_/ /g;
+
             push @mapArray,
               {
                 name => $file_name,
@@ -62,28 +67,28 @@ sub indexDir {
 
 sub replace {
     my ($strings) = @_;
-    return
-      sprintf( '[%s]({{< ref "%s">}})', $strings->{name}, $strings->{path} );
+    return sprintf( '[%s](%s)', $strings->{name}, $strings->{path} );
 }
 
-local $/;
-my $inputText = <STDIN>;
-chomp $inputText;
+while ( my $line = <STDIN> ) {
+    chomp $line;
 
-if ($inputText =~ /^(.*)$/) {
-    $inputText = $1;  
-} else {
-    die "Input is invalid or tainted";
+    if ( $line =~ /^(.*)$/ ) {
+        $line =~ s/\s+/_/g;
+    }
+    else {
+        die "Input line is invalid or tainted";
+    }
+
+    $line =~ s/\[(.*?)\]/ 
+        my @matches = indexDir($1);  
+        if (@matches) {
+            replace($matches[0]);  
+        } else {
+            "[$1]";  
+        } 
+    /eg;
+
+    print "$line\n";
 }
-
-$inputText =~ s/\[(.*?)\]/ 
-    my @matches = indexDir($1);  
-    if (@matches) {
-        replace($matches[0]);  
-    } else {
-        "[$1]";  
-    } 
-/eg;  
-
-print $inputText;
 

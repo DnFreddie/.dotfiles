@@ -30,6 +30,15 @@ vim.opt.isfname:append("@-@")
 
 vim.opt.updatetime = 50
 
+vim.diagnostic.config({
+  virtual_text = false,   -- Disable inline diagnostic messages
+  signs = true,           -- Show signs in the sign column
+  underline = false,       -- Underline diagnostic issues
+  update_in_insert = false, -- Only update diagnostics when leaving insert mode
+  severity_sort = true,   -- Sort diagnostics by severity (optional)
+})
+
+
 -- Highlight on yank
 vim.api.nvim_create_augroup("YankHighlight", { clear = true })
 vim.api.nvim_create_autocmd("TextYankPost", {
