@@ -19,6 +19,7 @@ set ignorecase
 set smartcase
 set undofile
 let &undodir = expand('$HOME/.vim/undodir_vim')
+set noswapfile
 set signcolumn=yes
 set smartcase
 
@@ -129,6 +130,12 @@ hi VertSplit ctermfg=black ctermbg=black guifg=black guibg=black
 " Set the statusline background to grey and text to black
 hi StatusLine ctermbg=8 ctermfg=0 guibg=#808080 guifg=black
 hi StatusLineNC ctermbg=8 ctermfg=7 guibg=#808080 guifg=darkgrey
+set number relativenumber
+set numberwidth=4
+highlight LineNr ctermbg=black ctermfg=8 guibg=#000000 guifg=#808080
+highlight CursorLineNr ctermbg=black ctermfg=8 guibg=#000000 guifg=#808080
+set signcolumn=no
+highlight SignColumn ctermbg=NONE guibg=NONE
 
 " Ensure the colorscheme is applied after these changes
 if exists("g:colors_name")

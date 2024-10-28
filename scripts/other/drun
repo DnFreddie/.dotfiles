@@ -1,0 +1,18 @@
+#!/usr/bin/sh
+
+DMENU_BACKGROUND="#1c1b22"
+DMENU_FOREGROUND="#c8c3e9"
+DMENU_SEL_BACKGROUND="#c678dd"
+DMENU_SEL_FOREGROUND="#282c34"
+
+FONT="JetBrains Mono-16"
+
+{ dmenu_path; flatpak list --app --columns=application | sed 's/^/flatpak run /'; } | \
+dmenu \
+    -nb "$DMENU_BACKGROUND" \
+    -nf "$DMENU_FOREGROUND" \
+    -sb "$DMENU_SEL_BACKGROUND" \
+    -sf "$DMENU_SEL_FOREGROUND" \
+    -fn "$FONT" \
+    -p "Run:" \
+    "$@" | ${SHELL:-"/bin/sh"} &

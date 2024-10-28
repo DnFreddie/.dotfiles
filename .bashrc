@@ -29,14 +29,16 @@ shopt -s histverify
 shopt -s cdspell
 
 #---------------Aliases---------------
-alias "??"="w3m 'https://lite.duckduckgo.com/lite/?q='\""
+alias "?"="ddg"
+alias  "new"="exec bash -l"
 alias pf="pandoc -f markdown -t gfm"
 alias vs="sudo -E nvim "
-alias "?"="gpt"
+alias "??"="gpt"
 alias gitl="git log -n 5 --graph --decorate --oneline"
 alias issue="gh issue create"
 alias cat="bat"
 alias cl="clear"
+alias less="bat"
 #alias tn="tmux new-session -s \$(pwd | sed 's/.*\///g')"
 alias grep='grep --color=auto'
 alias path='echo -e "${PATH//:/\\n}"'
@@ -49,7 +51,6 @@ alias ll='ls -lha'
 alias dp='tmux capture-pane -p -S - | nvim'
 alias diff='diff --color=auto'
 alias ip='ip --color=auto'
-alias vi='vim'
 alias files='nautilus'
 
 #---------------Binds---------------
@@ -71,19 +72,6 @@ ram() {
 hed() {
   head -n1 "$@" | perl -lane 'for my $i (0..$#F) { print "$i: $F[$i]" }'
 
-}
-
-less() {
-  if [ $# -eq 1 ]; then
-    /usr/bin/less
-  elif [ -d "$1" ]; then
-    find "$1" | /usr/bin/less
-
-  elif [ -f "$1" ]; then
-    /usr/bin/lees "$1"
-  else
-    /usr/bin/less "$@"
-  fi
 }
 
 hh() {
@@ -119,7 +107,6 @@ v() {
 
 
 tn() {
-
 tcreate() { 
     if [ -z "$TMUX" ]; then 
         cd "$2" && tmux new -As "$1"; 
@@ -127,40 +114,39 @@ tcreate() {
         tmux detach -E "cd '$2' && tmux new -A -s '$1'"; 
     fi 
 }
-
-
   case $1 in
     -c)
-      tcreate "$(basename "$PWD")"
-
+      tcreate "$(basename "$PWD")" "$PWD"
+      return
+      ;;
+    -p)
+      if [ -n "$2" ] && [ -d "$2" ]; then
+        tcreate "$(basename "$2")" "$2"
+      else
+        echo "Error: Invalid path or path not provided"
+        return 1
+      fi
+      return
       ;;
   esac
-
   if ! tmux list-sessions > /dev/null 2>&1; then
-    tcreate "$(pwd | sed 's/.*\///g')"
+    tcreate "$(pwd | sed 's/.*\///g')" "$PWD"
   fi
-
   printf "Select:\n"
   mapfile -t sessions_array < <(tmux list-sessions)
-
   for i in "${!sessions_array[@]}"; do
     session_name="${sessions_array[$i]%%:*}"
     session_description="${sessions_array[$i]#*:}"
-
     printf "\033[38;2;181;126;220m%d.\033[0m " "$((i + 1))"
     printf "\033[1;38;2;150;150;170m%s\033[0m " "$session_name"
     printf "\033[38;2;120;120;120m%s\033[0m\n" "$session_description"
-
   done
-
   printf ":"
-
   read -r choice
-
   if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "${#sessions_array[@]}" ]; then
     selected="${sessions_array[$((choice - 1))]}"
     session_name="${selected%%:*}"
-    tcreate "$session_name"
+    tcreate "$session_name" "$PWD"
   elif [ -n "$choice" ]; then
     echo "Invalid selection!"
   else
@@ -242,7 +228,6 @@ export LESS_TERMCAP_se=$'\E[0m'                              # Reset search high
 
 #---------------Prompt---------------
 configure_prompt() {
-
   git_branch() {
     local branch
     if branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null); then
@@ -253,39 +238,53 @@ configure_prompt() {
       fi
     fi
   }
-
   getDeep() {
     local deepness=$SHLVL
-
     if [ -n "$TMUX" ]; then
       deepness=$((deepness - 1))
     fi
-
     if [ "$deepness" -eq 1 ]; then
-      echo "$"
+      if [ -z "$TMUX" ]; then
+        printf "\001\e[38;2;150;150;170m\002$\001\e[0m\002"
+      else
+        printf "\001\e[33m\002$\001\e[0m\002"
+      fi
     else
-      echo "${deepness}$"
+      if [ -z "$TMUX" ]; then
+        printf "\001\e[38;2;150;150;170m\002${deepness}$\001\e[0m\002"
+      else
+        printf "\001\e[33m\002${deepness}$\001\e[0m\002"
+      fi
     fi
   }
-
-  PS1="${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+($(basename "$VIRTUAL_ENV"))─}\[\e[38;2;150;150;170m\]\]\w\[\e[37m\]\$(git_branch)\n\[\e[33m\]\$(getDeep)\[\e[0m\]"
-
+  
+  get_user_and_session() {
+    if [ -n "$TMUX" ]; then
+      local session_name=$(tmux display-message -p '#S')
+      echo -n "\u:$session_name"
+    else
+      echo -n "\u"
+    fi
+  }
+  
+  PS1="${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+($(basename "$VIRTUAL_ENV"))─}\[\e[38;2;150;150;170m\]$(get_user_and_session) \[\e[38;2;150;150;170m\]\w\[\e[37m\]\$(git_branch)\n\$(getDeep) "
 }
-
 #---------------Setup env---------------
 setup_environment() {
-  # Go-related settings
+#---------------Go-related settings---------------
+  export GOROOT="$HOME/.local/go"
   export GOPATH="$HOME/.go"
   export PATH="$PATH:$GOROOT/bin:$GOPATH/bin"
+#---------------Export path---------------
   export PATH="$PATH:$HOME/.local/bin/"
   export PATH="$PATH:$HOME/.local/bin/"
   export PATH="$PATH:$HOME/scripts/"
-
   # Cargo (Rust) setup
   if [ -f "$HOME/.cargo/env" ]; then
     . "$HOME/.cargo/env"
   fi
 
+#----------------------------------------------
   # Terraform autocomplete
   if command -v terraform &> /dev/null; then
     complete -C /usr/bin/terraform terraform

@@ -7,7 +7,7 @@ use File::Basename;
 sub indexDir {
     my ($filter) = @_;
 
-    my $startDir = "/home/rocky/github.com/DnFreddie/Notes/content/posts/";
+    my $startDir = "/home/aura/github.com/DnFreddie/Notes/content/posts/";
 
     # Untaint the directory path
     if ( $startDir =~ m{^(/[\w\-/\.]+)$} ) {
@@ -20,6 +20,10 @@ sub indexDir {
     unless ( -d $startDir ) {
         die "Directory $startDir does not exist or is not a directory.";
     }
+
+    # Replace spaces in the filter for the search phase only
+    my $search_filter = $filter;
+    $search_filter =~ s/\s+/_/g;
 
     my @files;
     find(
@@ -50,8 +54,8 @@ sub indexDir {
             next;
         }
 
-        if ( $file_name =~ /$filter/i ) {
-
+        if ( $file_name =~ /$search_filter/i ) {
+            # Only replace underscores with spaces in the output file name
             $file_name =~ s/_/ /g;
 
             push @mapArray,
@@ -67,19 +71,18 @@ sub indexDir {
 
 sub replace {
     my ($strings) = @_;
-    return sprintf( '[%s](%s)', $strings->{name}, $strings->{path} );
+
+    my $new_path = "/Notes/" . $strings->{path};
+
+    $new_path =~ s/\.md$//;
+
+    return sprintf( '[%s](%s)', $strings->{name}, $new_path );
 }
 
 while ( my $line = <STDIN> ) {
     chomp $line;
 
-    if ( $line =~ /^(.*)$/ ) {
-        $line =~ s/\s+/_/g;
-    }
-    else {
-        die "Input line is invalid or tainted";
-    }
-
+    # Don't replace spaces globally in the line; keep the filter intact
     $line =~ s/\[(.*?)\]/ 
         my @matches = indexDir($1);  
         if (@matches) {
