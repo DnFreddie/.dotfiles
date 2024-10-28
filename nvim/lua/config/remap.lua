@@ -100,3 +100,6 @@ vim.keymap.set("n", "<leader>gt", vim.cmd.GoTest)
 vim.keymap.set("n", "<leader>ge", vim.cmd.GoIfErr)
 vim.keymap.set("n", "<leader>gf", vim.cmd.GoFillStruckt)
 vim.keymap.set("n", "<leader>gt", vim.cmd.GoAddTag)
+-- Leader + fg for grep search using Vim's built-in `:grep`
+vim.api.nvim_set_keymap('n', '<leader>fg', ':grep! ', { noremap = true, silent = false })
+vim.api.nvim_set_keymap('n', '<leader>e', ':find ', { noremap = true, silent = false })

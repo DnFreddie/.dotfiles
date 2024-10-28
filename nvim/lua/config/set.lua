@@ -1,5 +1,7 @@
 vim.opt.nu = false
 vim.opt.relativenumber = true
+vim.opt.grepprg ="rg --vimgrep --no-heading --color=never --no-heading  --column --smart-case"
+vim.opt.path:append("**")
 
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4

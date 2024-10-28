@@ -10,15 +10,10 @@ return { -- Telescope
 }, {
 	"nvim-treesitter/playground",
 }, { "nvim-treesitter/nvim-treesitter-textobjects" }, -- Other plugins
-{
-	"theprimeagen/refactoring.nvim",
-}, {
+ {
 	"mbbill/undotree",
-}, {
-	"preservim/tagbar",
-}, {
-	"tpope/vim-commentary",
-}, {
+},
+ {
 	"hrsh7th/cmp-nvim-lua",
 }, {
 	"hrsh7th/cmp-nvim-lsp-signature-help",

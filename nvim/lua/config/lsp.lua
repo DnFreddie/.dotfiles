@@ -51,7 +51,16 @@ lsp.on_attach(function(client, bufnr)
     vim.keymap.set("n", "<leader>dp", function() vim.diagnostic.goto_prev() end, opts)
     vim.keymap.set("n", "<leader>df", function() vim.diagnostic.open_float() end, opts)
     vim.keymap.set("n", "<leader>fc", function() vim.lsp.buf.rename() end, opts)
+    -- LSP References
+vim.keymap.set("n", "<leader>ff", function()vim.lsp.buf.references()end, { desc = "[LSP] Find References" })
 
+-- Document Symbols
+vim.keymap.set("n", "<leader>fs", function()vim.lsp.buf.document_symbol()end, { desc = "[LSP] Find Document Symbols" })
+-- Workspace Symbols
+vim.keymap.set("n", "<leader>fa", function()  vim.lsp.buf.workspace_symbol()end, { desc = "[LSP] Find Workspace Symbols" })
+vim.keymap.set("n", "<leader>fi", function()  vim.lsp.buf.implementation()end, { desc = "[LSP] Find Implementations" })
+-- Diagnostics
+vim.keymap.set("n", "<leader>vws", function()  vim.diagnostic.open_float()end, { desc = "Show Diagnostics" })
     -- Ensure diagnostic config is applied after LSP attaches
     vim.diagnostic.config({
         virtual_text = false,

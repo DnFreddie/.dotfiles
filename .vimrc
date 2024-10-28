@@ -2,7 +2,8 @@
 set noerrorbells
 set vb t_vb=
 set mouse=a
-
+set path+=**
+set grepprg ="rg --vimgrep --no-heading --column --smart-case"
 let mapleader = " "
 nnoremap <leader><Space> :Explore<CR>
 
