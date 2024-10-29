@@ -29,8 +29,8 @@ shopt -s histverify
 shopt -s cdspell
 
 #---------------Aliases---------------
+alias g="gosh"
 alias "?"="ddg"
-alias  "new"="exec bash -l"
 alias pf="pandoc -f markdown -t gfm"
 alias vs="sudo -E nvim "
 alias "??"="gpt"
@@ -39,19 +39,18 @@ alias issue="gh issue create"
 alias cat="bat"
 alias cl="clear"
 alias less="bat"
+alias vi="nvim"
 #alias tn="tmux new-session -s \$(pwd | sed 's/.*\///g')"
 alias grep='grep --color=auto'
 alias path='echo -e "${PATH//:/\\n}"'
 alias ls="ls --color=auto"
 alias py="python3"
 alias la="ls -a"
-alias pie="perl -p -i -e"
-alias gp="perl -n -e"
 alias ll='ls -lha'
-alias dp='tmux capture-pane -p -S - | nvim'
+alias dump='tmux capture-pane -p -S - | nvim'
 alias diff='diff --color=auto'
 alias ip='ip --color=auto'
-alias files='nautilus'
+alias k='kubeclt'
 
 #---------------Binds---------------
 # owncomp=(awk)
@@ -92,19 +91,6 @@ hh() {
 }
 
 #---------------Editor Commands---------------
-
-v() {
-  if [ "$#" -eq 1 ]; then
-    if [ -d "$1" ]; then
-      nvim "$1" +":cd $1" +"Explore"
-    else
-      nvim "$1" +"cd $(dirname "$1")"
-    fi
-  else
-    nvim . +":cd ." +"Explore"
-  fi
-}
-
 
 tn() {
 tcreate() { 
@@ -199,9 +185,8 @@ pathappend() {
 } && export -f pathappend
 
 
-# Add to your ~/.bashrc or ~/.zshrc
 ddg() {
-    local search="${*// /+}"  # Replace spaces with +
+    local search="${*// /+}"  
     w3m -o confirm_qq=false  "https://lite.duckduckgo.com/lite?q=$search"
 }
 #------------- Bash settings --------------------
@@ -251,16 +236,19 @@ configure_prompt() {
       fi
     else
       if [ -z "$TMUX" ]; then
-        printf "\001\e[38;2;150;150;170m\002${deepness}$\001\e[0m\002"
+          printf "\e[38;2;150;150;170m%s$\e[0m" "$deepness"
+
       else
-        printf "\001\e[33m\002${deepness}$\001\e[0m\002"
+        printf "\e[33m%s$\e[0m" "$deepness"
+
       fi
     fi
   }
   
   get_user_and_session() {
     if [ -n "$TMUX" ]; then
-      local session_name=$(tmux display-message -p '#S')
+        local session_name
+       session_name=$(tmux display-message -p '#S')
       echo -n "\u:$session_name"
     else
       echo -n "\u"

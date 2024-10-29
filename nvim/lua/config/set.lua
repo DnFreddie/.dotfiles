@@ -1,6 +1,6 @@
 vim.opt.nu = false
-vim.opt.relativenumber = true
-vim.opt.grepprg ="rg --vimgrep --no-heading --color=never --no-heading  --column --smart-case"
+vim.opt.relativenumber = false
+vim.opt.grepprg ="rg --vimgrep --no-heading --color=never  -i"
 vim.opt.path:append("**")
 
 vim.opt.tabstop = 4
@@ -11,10 +11,14 @@ vim.opt.expandtab = true
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 
+vim.opt.wildmenu = true
+vim.opt.wildmode = "full:lastused"
+vim.o.wildignorecase = true
 vim.opt.smartindent = true
 ---vim.api.nvim_set_var('netrw_keepdir', 0)
 
 vim.opt.wrap = false
+
 
 vim.opt.swapfile = false
 vim.opt.backup = false
@@ -27,15 +31,15 @@ vim.opt.incsearch = true
 vim.opt.termguicolors = true
 
 vim.opt.scrolloff = 8
-vim.opt.signcolumn = "yes"
+vim.opt.signcolumn = "no"
 vim.opt.isfname:append("@-@")
 
 vim.opt.updatetime = 50
 
 vim.diagnostic.config({
   virtual_text = false,   -- Disable inline diagnostic messages
-  signs = true,           -- Show signs in the sign column
-  underline = false,       -- Underline diagnostic issues
+  signs = false,           -- Show signs in the sign column
+  underline = true,       -- Underline diagnostic issues
   update_in_insert = false, -- Only update diagnostics when leaving insert mode
   severity_sort = true,   -- Sort diagnostics by severity (optional)
 })

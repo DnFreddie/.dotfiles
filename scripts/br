@@ -27,6 +27,9 @@ process_line() {
     "s")
       printf '"%s"\n' "$line"
       ;;
+    "c")
+      printf '```bash\n%s\n```' "$line"
+      ;;
     *)
       printf "%s%s%s\n" "$bracket" "$line" "$bracket"
       ;;

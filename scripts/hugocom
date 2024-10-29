@@ -7,7 +7,10 @@ use File::Basename;
 sub indexDir {
     my ($filter) = @_;
 
-    my $startDir = "/home/aura/github.com/DnFreddie/Notes/content/posts/";
+
+
+    my $home = $ENV{HOME};  
+    my $startDir = sprintf("%s/github.com/DnFreddie/Notes/content/posts/", $home);
 
     # Untaint the directory path
     if ( $startDir =~ m{^(/[\w\-/\.]+)$} ) {

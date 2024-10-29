@@ -12,10 +12,6 @@ vim.keymap.set("n", "<leader>dd", [["+dd]])
 vim.keymap.set("n", "<leader>Y", [["+Y]])
 -- scroll back one page by ctrl space
 vim.keymap.set("n", "<C-Space>", "<C-f>")
--- scroll back one page by ctrl shtift  space
---vim.keymap.set("n", "<C-S-Space>", "<C-u>")
---vim.keymap.set({"n", "v"}, "<leader>d", [["_d]])
---vim.keymap.set({"n", "v"}, "<leader>d", [["_d]])
 
 vim.keymap.set("n", "Q", "<nop>")
 vim.keymap.set(
@@ -31,7 +27,7 @@ vim.keymap.set(
 	"<cmd>execute 'tcd ' . fnameescape(expand('%:h'))<CR>"
 )
 vim.keymap.set("n", "<leader><space>", ":Explore<CR>")
----vim.keymap.set("n", "<leader>fr", ":bro ol <CR>")
+vim.keymap.set("n", "<leader>fr", ":bro ol <CR>")
 --
 -- -- Having longer updatetime (default is 4000 ms = 4s) leads to noticeable
 -- -- delays and poor user experience
@@ -48,8 +44,6 @@ vim.api.nvim_set_keymap("n", "<C-w>F", ":tabc<CR>", {
 	noremap = true,
 	silent = true,
 })
-vim.opt.wildmenu = true
-vim.opt.wildmode = "full:lastused"
 --vim.api.nvim_set_keymap('n', '<C-p>', ' mzyyP`z', { noremap = true, silent = true })
 
 local function duplicate_line_and_move_down()
@@ -70,14 +64,7 @@ vim.api.nvim_set_keymap("n", "<C-p>", "", {
 	callback = duplicate_line_and_move_down,
 })
 
-vim.api.nvim_set_keymap("n", "<Leader>cc", ": belowright Compile<CR>", {
-	noremap = true,
-	silent = true,
-})
-vim.api.nvim_set_keymap("n", "<Leader>cr", ": belowright Recompile<CR>", {
-	noremap = true,
-	silent = true,
-})
+vim.api.nvim_set_keymap("n", "<Leader>cc", ":make", {	noremap = true,	silent = false,})
 vim.api.nvim_set_keymap(
 	"n",
 	"<Leader>cq",
@@ -87,19 +74,10 @@ vim.api.nvim_set_keymap(
 		silent = true,
 	}
 )
-vim.api.nvim_set_keymap("n", "<Leader>cn", ": NextError<CR>", {
-	noremap = true,
-	silent = true,
-})
-vim.api.nvim_set_keymap("n", "<Leader>cp", ": :PrevError<CR>", {
-	noremap = true,
-	silent = true,
-})
-
 vim.keymap.set("n", "<leader>gt", vim.cmd.GoTest)
 vim.keymap.set("n", "<leader>ge", vim.cmd.GoIfErr)
 vim.keymap.set("n", "<leader>gf", vim.cmd.GoFillStruckt)
 vim.keymap.set("n", "<leader>gt", vim.cmd.GoAddTag)
 -- Leader + fg for grep search using Vim's built-in `:grep`
-vim.api.nvim_set_keymap('n', '<leader>fg', ':grep! ', { noremap = true, silent = false })
+vim.api.nvim_set_keymap('n', '<leader>fg', ':silent! grep! | copen<Left><Left><Left><Left><Left><Left><Left>', { noremap = true, silent = false })
 vim.api.nvim_set_keymap('n', '<leader>e', ':find ', { noremap = true, silent = false })

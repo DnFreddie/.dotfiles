@@ -23,3 +23,17 @@ end
 
 vim.keymap.set("x", "f", run_on_visual)
 
+-- Lua: Truncate v:oldfiles to keep only the most recent N entries
+local function limit_oldfiles(max_length)
+  local oldfiles = vim.v.oldfiles
+  if #oldfiles > max_length then
+    -- Trim down to the last 'max_length' entries
+    vim.v.oldfiles = { unpack(oldfiles, 1, max_length) }
+  end
+end
+
+-- Set the limit to, say, 50 oldfiles
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function() limit_oldfiles(7) end,
+})
+
