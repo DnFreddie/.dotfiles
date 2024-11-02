@@ -30,6 +30,17 @@ process_line() {
     "c")
       printf '```bash\n%s\n```' "$line"
       ;;
+
+    "ac")
+      local formatted_words=()
+      for word in $line; do
+        formatted_words+=("{{ $word }}")
+      done
+      printf "%s\n" "${formatted_words[*]}"
+      ;;
+    "a")
+      printf '{{ %s }}' "$line"
+      ;;
     *)
       printf "%s%s%s\n" "$bracket" "$line" "$bracket"
       ;;
@@ -46,4 +57,3 @@ else
     process_line "$line"
   done
 fi
-

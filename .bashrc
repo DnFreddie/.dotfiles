@@ -29,6 +29,8 @@ shopt -s histverify
 shopt -s cdspell
 
 #---------------Aliases---------------
+alias play="ansible-playbook"
+alias gits="git status"
 alias g="gosh"
 alias "?"="ddg"
 alias pf="pandoc -f markdown -t gfm"
@@ -82,7 +84,6 @@ hh() {
 
   if [ -n "$selected" ]; then
     echo "$selected"
-    echo "$selected" | xclip -sel clip
   else
     echo "No command selected."
 
@@ -187,7 +188,7 @@ pathappend() {
 
 ddg() {
     local search="${*// /+}"  
-    w3m -o confirm_qq=false  "https://lite.duckduckgo.com/lite?q=$search"
+    w3m -o confirm_qq=false "https://lite.duckduckgo.com/lite?q=$search"
 }
 #------------- Bash settings --------------------
 
