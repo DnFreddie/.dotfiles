@@ -6,7 +6,7 @@ For editing, I’m all about **nvim** (*Neovim*).
 
 Got my **Vim** config set up for making quick changes on remote machines.
 
-I use **i3** as my window manager, and I keep it simple with no wallpaper, so if you see a black screen, don’t freak out! I use **ALT** as my mod key.
+I use **i3** as my window manager, and I keep it simple with no wallpaper, so if you see a black screen, don’t freak out! I use **SUPER_KEY** as my mod key.
 
 Oh and also the terminal i use is **xterm**.
 <table>
