@@ -213,6 +213,7 @@ export LESS_TERMCAP_so=$'\E[38;2;17;17;27;48;2;243;139;168m' # Red search highli
 export LESS_TERMCAP_se=$'\E[0m'                              # Reset search highlighting
 
 #---------------Prompt---------------
+
 configure_prompt() {
   git_branch() {
     local branch
@@ -224,39 +225,20 @@ configure_prompt() {
       fi
     fi
   }
+
   getDeep() {
     local deepness=$SHLVL
     if [ -n "$TMUX" ]; then
       deepness=$((deepness - 1))
     fi
     if [ "$deepness" -eq 1 ]; then
-      if [ -z "$TMUX" ]; then
-        printf "\001\e[38;2;150;150;170m\002$\001\e[0m\002"
-      else
-        printf "\001\e[33m\002$\001\e[0m\002"
-      fi
+      printf "\001\e[38;2;150;150;170m\002$\001\e[0m\002"  
     else
-      if [ -z "$TMUX" ]; then
-          printf "\e[38;2;150;150;170m%s$\e[0m" "$deepness"
-
-      else
-        printf "\e[33m%s$\e[0m" "$deepness"
-
-      fi
+      printf "\e[38;2;150;150;170m%s$\e[0m" "$deepness"    
     fi
   }
   
-  get_user_and_session() {
-    if [ -n "$TMUX" ]; then
-        local session_name
-       session_name=$(tmux display-message -p '#S')
-      echo -n "\u:$session_name"
-    else
-      echo -n "\u"
-    fi
-  }
-  
-  PS1="${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+($(basename "$VIRTUAL_ENV"))─}\[\e[38;2;150;150;170m\]$(get_user_and_session) \[\e[38;2;150;150;170m\]\w\[\e[37m\]\$(git_branch)\n\$(getDeep) "
+  PS1="${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+($(basename "$VIRTUAL_ENV"))─}\[\e[38;2;230;230;250m\]\u \[\e[38;2;150;150;170m\]\w\[\e[37m\]\$(git_branch)\n\$(getDeep) "
 }
 #---------------Setup env---------------
 setup_environment() {
