@@ -67,43 +67,12 @@ vim.api.nvim_create_autocmd("VimEnter", { callback = function()
 	limit_oldfiles(7)
 end })
 
-vim.api.nvim_create_user_command(
-	"GlobalMarkBasenames",
-	function()
-		local marks = vim.fn.getmarklist()
-		local found_marks = false
-		table.sort(marks, function(a, b)
-			return a.mark:sub(2) < b.mark:sub(2)
-		end)
-		for _, mark in ipairs(marks) do
-			local letter = mark.mark:sub(2, 2)
-			if letter:match("[A-Z]") then
-				found_marks = true
-				local basename = vim.fn.fnamemodify(mark.file, ":t")
-				local pos = mark.pos[2] .. ":" .. mark.pos[1] -- line:column format
-				vim.api.nvim_echo(
-					{
-						{ "[" .. letter .. "] ", "Identifier" },
-						{ basename, "Directory" },
-						{ " (" .. pos .. ")", "Comment" },
-						{ "\n", "NONE" },
-					},
-					false,
-					{}
-				)
-			end
-		end
-		if not found_marks then
-			vim.api.nvim_echo(
-				{ { "No global marks found", "WarningMsg" } },
-				false,
-				{}
-			)
-		end
-	end,
-	{ desc = "Display basenames of files with global marks" }
-)
-vim.api.nvim_set_keymap("n", "<C-f>", ":GlobalMarkBasenames<CR>", {
-	noremap = true,
-	silent = true,
+vim.api.nvim_set_keymap("n", "<M-e>", ":marks  ABCDEFGHIJKLNOPQRSTUVWXYZ<CR>", {
+    noremap = true,
+    silent = true,
 })
+vim.api.nvim_set_keymap("n", "<M-a>", ":marks  abcdefghijklnopqrstuvwxyz<CR>", {
+    noremap = true,
+    silent = true,
+})
+

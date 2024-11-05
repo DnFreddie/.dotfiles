@@ -183,7 +183,7 @@ bindsym $mod+x kill
 
 # Lock the system
 # lock with a picture:
-bindsym mod4+l exec --no-startup-id i3lock -i   ~/Pictures/wallpapers/rockyL.png -t -e -f && systemctl suspend
+#bindsym mod4+l exec --no-startup-id i3lock -i   ~/Pictures/wallpapers/rockyL.png -t -e -f && systemctl suspend
 # lock by blurring the screen:
 #bindsym mod4+l exec --no-startup-id ~/.config/i3/scripts/blur-lock
 
