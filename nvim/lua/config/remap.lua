@@ -79,5 +79,10 @@ vim.keymap.set("n", "<leader>ge", vim.cmd.GoIfErr)
 vim.keymap.set("n", "<leader>gf", vim.cmd.GoFillStruckt)
 vim.keymap.set("n", "<leader>gt", vim.cmd.GoAddTag)
 -- Leader + fg for grep search using Vim's built-in `:grep`
-vim.api.nvim_set_keymap('n', '<leader>fg', ':silent! grep! | copen<Left><Left><Left><Left><Left><Left><Left>', { noremap = true, silent = false })
+vim.api.nvim_set_keymap('n', '<leader>fg', ':silent! grep! ""| copen<Left><Left><Left><Left><Left><Left><Left><Left>', { noremap = true, silent = false })
 vim.api.nvim_set_keymap('n', '<leader>e', ':find ', { noremap = true, silent = false })
+vim.api.nvim_set_keymap("n", "<Leader>ba", ":ls<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<Leader>bn", ":bnext<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<Leader>bp", ":bprevious<CR>", { noremap = true, silent = true })
+vim.api.nvim_set_keymap("n", "<Leader>bd", ":bdelete<CR>", { noremap = true, silent = true })
+

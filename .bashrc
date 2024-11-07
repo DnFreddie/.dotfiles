@@ -12,7 +12,14 @@ if ! shopt -oq posix; then
 else
   printf "No complitons found\n"
 fi
-# ------------- Options --------------------
+
+ if ! shopt -oq posix; then 
+ for i in "$HOME/.local/share/completions/"*; do
+     [[ -r "$i" ]] &&   source "$i"
+ done
+ fi 
+
+#  ------------- Options --------------------
 set -o vi
 shopt -s checkwinsize
 shopt -s expand_aliases
@@ -30,17 +37,16 @@ shopt -s cdspell
 
 #---------------Aliases---------------
 alias play="ansible-playbook"
+alias d="podman"
 alias gits="git status"
-alias g="gosh"
 alias "?"="ddg"
 alias pf="pandoc -f markdown -t gfm"
 alias vs="sudo -E nvim "
 alias "??"="gpt"
 alias gitl="git log -n 5 --graph --decorate --oneline"
 alias issue="gh issue create"
-alias cat="bat"
+alias cat="bat -p"
 alias cl="clear"
-alias less="bat"
 alias vi="nvim"
 #alias tn="tmux new-session -s \$(pwd | sed 's/.*\///g')"
 alias grep='grep --color=auto'
@@ -52,7 +58,7 @@ alias ll='ls -lha'
 alias dump='tmux capture-pane -p -S - | nvim'
 alias diff='diff --color=auto'
 alias ip='ip --color=auto'
-alias k='kubeclt'
+alias k='kubectl'
 
 #---------------Binds---------------
 # owncomp=(awk)
@@ -94,52 +100,87 @@ hh() {
 #---------------Editor Commands---------------
 
 tn() {
-tcreate() { 
-    if [ -z "$TMUX" ]; then 
-        cd "$2" && tmux new -As "$1"; 
-    else 
-        tmux detach -E "cd '$2' && tmux new -A -s '$1'"; 
-    fi 
+    local COLOR_INDEX="\033[38;2;181;126;220m"
+    local COLOR_SESSION_NAME="\033[1;38;2;150;150;170m"
+    local COLOR_SESSION_DESCRIPTION="\033[38;2;120;120;120m"
+    local COLOR_RESET="\033[0m"
+
+    tcreate() { 
+        if [ -z "$TMUX" ]; then 
+            cd "$2" && tmux new -As "$1"; 
+        else 
+            tmux detach -E "cd '$2' && tmux new -A -s '$1'"; 
+        fi 
+    }
+
+    case $1 in
+        -c)
+            tcreate "$(basename "$PWD")" "$PWD"
+            return
+            ;;
+        -p)
+            if [ -n "$2" ] && [ -d "$2" ]; then
+                tcreate "$(basename "$2")" "$2"
+            else
+                echo "Error: Invalid path or path not provided"
+                return 1
+            fi
+            return
+            ;;
+    esac
+
+    if [ -n "$1" ]; then
+        sessions=$(tmux list-sessions -F '#{session_name}')
+        matches=$(echo "$sessions" | grep -i "^$1")
+
+        if [ -z "$matches" ]; then
+            matches=$(echo "$sessions" | grep -i "$1")
+        fi
+
+        if [ -z "$matches" ]; then
+            echo "No matching session found for '$1'"
+            return 1
+        elif [ "$(echo "$matches" | wc -l)" -eq 1 ]; then
+            session_name="$matches"
+            tcreate "$session_name" "$PWD"
+            return
+        else
+            echo "Multiple matching sessions found:"
+            select session_name in $matches; do
+                [ -n "$session_name" ] && break
+            done
+            tcreate "$session_name" "$PWD"
+            return
+        fi
+    fi
+
+    if ! tmux list-sessions > /dev/null 2>&1; then
+        tcreate "$(basename "$PWD")" "$PWD"
+        return
+    fi
+
+    printf "Select:\n"
+    mapfile -t sessions_array < <(tmux list-sessions)
+    for i in "${!sessions_array[@]}"; do
+        session_name="${sessions_array[$i]%%:*}"
+        session_description="${sessions_array[$i]#*:}"
+        printf "${COLOR_INDEX}%d.${COLOR_RESET} " "$((i + 1))"
+        printf "${COLOR_SESSION_NAME}%s${COLOR_RESET} " "$session_name"
+        printf "${COLOR_SESSION_DESCRIPTION}%s${COLOR_RESET}\n" "$session_description"
+    done
+    printf ":"
+    read -r choice
+    if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [[ "$choice" -le "${#sessions_array[@]}" ]]; then
+        selected="${sessions_array[$((choice - 1))]}"
+        session_name="${selected%%:*}"
+        tcreate "$session_name" "$PWD"
+    elif [ -n "$choice" ]; then
+        echo "Invalid selection!"
+    else
+        echo "No session selected!"
+    fi
 }
-  case $1 in
-    -c)
-      tcreate "$(basename "$PWD")" "$PWD"
-      return
-      ;;
-    -p)
-      if [ -n "$2" ] && [ -d "$2" ]; then
-        tcreate "$(basename "$2")" "$2"
-      else
-        echo "Error: Invalid path or path not provided"
-        return 1
-      fi
-      return
-      ;;
-  esac
-  if ! tmux list-sessions > /dev/null 2>&1; then
-    tcreate "$(pwd | sed 's/.*\///g')" "$PWD"
-  fi
-  printf "Select:\n"
-  mapfile -t sessions_array < <(tmux list-sessions)
-  for i in "${!sessions_array[@]}"; do
-    session_name="${sessions_array[$i]%%:*}"
-    session_description="${sessions_array[$i]#*:}"
-    printf "\033[38;2;181;126;220m%d.\033[0m " "$((i + 1))"
-    printf "\033[1;38;2;150;150;170m%s\033[0m " "$session_name"
-    printf "\033[38;2;120;120;120m%s\033[0m\n" "$session_description"
-  done
-  printf ":"
-  read -r choice
-  if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "${#sessions_array[@]}" ]; then
-    selected="${sessions_array[$((choice - 1))]}"
-    session_name="${selected%%:*}"
-    tcreate "$session_name" "$PWD"
-  elif [ -n "$choice" ]; then
-    echo "Invalid selection!"
-  else
-    echo "No session selected!"
-  fi
-}
+
 
 #---------------Utilites-----------------------
 ex() {

@@ -27,29 +27,6 @@ vim.api.nvim_create_user_command(
 	{ range = true }
 )
 
-vim.api.nvim_create_user_command(
-	"RunOnVisual",
-	function()
-		run_on_visual()
-	end,
-	{ range = true }
-)
-
-vim.api.nvim_create_user_command(
-	"RunOnVisual",
-	function()
-		run_on_visual()
-	end,
-	{ range = true }
-)
-
-vim.api.nvim_create_user_command(
-	"RunOnVisual",
-	function()
-		run_on_visual()
-	end,
-	{ range = true }
-)
 
 vim.keymap.set("x", "f", run_on_visual)
 
