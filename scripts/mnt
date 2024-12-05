@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -e
+
+lsblk -o NAME,LABEL,SIZE,FSUSE%
+
+read -p "Enter the block device (e.g., sda1): " block_device
+
+mount_info=$(udisksctl mount -b "/dev/$block_device" 2>&1)
+
+mount_location=$(echo "$mount_info" | grep -oP 'at\s\K[^ ]+')
+
+if [[ -z "$mount_location" ]]; then
+  echo "Failed to retrieve the mount location. Output from udisksctl:"
+  echo "$mount_info"
+  exit 1
+fi
+
+session_name=$(basename "$mount_location")
+
+tmux new-session -d -s "$session_name" -c "$mount_location"
+
+tmux switch-client -t "$session_name"
+
+echo "Created tmux session '$session_name' in $mount_location"
+

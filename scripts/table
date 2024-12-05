@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+import sys
+
+first_line = sys.stdin.readline().strip()
+if first_line:
+    headers = first_line.split("|")
+    print("|" + "|".join(headers) + "|")
+    
+    separator = "|" + "|".join(["-" * len(h) for h in headers]) + "|"
+    print(separator)
+    
+    for line in sys.stdin:
+        values = line.strip().split("|")
+        print("|" + "|".join(values) + "|")
+

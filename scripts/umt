@@ -1,0 +1,22 @@
+#!/bin/bash
+mounted_media=$(df -h | grep /run/media/"$USER")
+
+if [[ -z "$mounted_media" ]]; then
+  echo "No mounted media found to unmount."
+  exit 0
+fi
+
+selected_mount=$(echo "$mounted_media" | fzf --header="Select a mount to unmount" --layout=reverse)
+
+if [[ -n "$selected_mount" ]]; then
+  mount_point=$(echo "$selected_mount" | awk '{print $1}')
+
+  if [[ -n "$mount_point" ]]; then
+    udisksctl unmount -b "$mount_point"
+  else
+    echo "Failed to extract the mount point from the selection."
+  fi
+else
+  echo "No selection made."
+fi
+

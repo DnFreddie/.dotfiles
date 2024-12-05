@@ -15,35 +15,55 @@ XTerm*vt100.translations: #override \n\
   Ctrl <Key>0: set-vt-font(d) \n\
   Ctrl Shift <Key>C: copy-selection(CLIPBOARD) \n\
   Ctrl Shift <Key>V: insert-selection(CLIPBOARD)
-*.foreground: #F8F8F2
+! Background and Foreground
 *.background: black
-*.color0:     #000000
-*.color8:     #4D4D4D
-*.color1:     #FF5555
-*.color9:     #FF6E67
-*.color2:     #50FA7B
-*.color10:    #5AF78E
-*.color3:     #F1FA8C
-*.color11:    #F4F99D
-*.color4:     #BD93F9
-*.color12:    #CAA9FA
-*.color5:     #FF79C6
-*.color13:    #FF92D0
-*.color6:     #8BE9FD
-*.color14:    #9AEDFE
-*.color7:     #BFBFBF
-*.color15:    #E6E6E6
+*.foreground: #F8F8F2
 
- XTerm.vt100.scaleHeight: 1.01
-! disable bold font faces, instead make text light blue.
-! disable underlined text, instead make it white.
-XTerm.vt100.colorULMode: true
-XTerm.vt100.colorUL: rgb:e4/e4/e4
-! similarly use colorIT for italics
-XTerm.vt100.font1:  -misc-fixed-medium-r-normal--10-100-75-75-c-60-iso8859-1
-XTerm.vt100.font2:  -misc-fixed-medium-r-normal--12-120-75-75-c-70-iso8859-1
-XTerm.vt100.font3:  -misc-fixed-medium-r-normal--14-140-75-75-c-80-iso8859-1
-XTerm.vt100.font4:  -misc-fixed-medium-r-normal--16-160-75-75-c-90-iso8859-1
-XTerm.vt100.font5:  -misc-fixed-medium-r-normal--18-180-75-75-c-100-iso8859-1
-XTerm.vt100.font6:  -misc-fixed-medium-r-normal--20-200-75-75-c-110-iso8859-1
+! Base Colors
+! Black
+*.color0:    #000000
+! Red
+*.color1:    #FF5555
+! Green
+*.color2:    #00FF00
+! Yellow
+*.color3:    #F1FA8C
+! Blue
+*.color4:    #BD93F9
+! Magenta
+*.color5:    #FF79C6
+! Cyan
+*.color6:    #8BE9FD
+! White
+*.color7:    #BFBFBF
+
+! Bright Colors
+! Bright Black (Gray)
+*.color8:    #4D4D4D
+! Bright Red
+*.color9:    #FF6E67
+! Bright Green
+*.color10:   #CCFFCC
+! Bright Yellow
+*.color11:   #F4F99D
+! Bright Blue
+*.color12:   #CAA9FA
+! Bright Magenta
+*.color13:   #FF92D0
+! Bright Cyan
+*.color14:   #9AEDFE
+! Bright White
+*.color15:   #E6E6E6
+! Smoother resizing settings
+xterm*resizeGravity: SouthEast
+xterm*dynamicColors: true
+xterm*autoWrap: true
+xterm*scaleHeight: 1.01
+xterm*faceSizeStep: 0.6
+xterm*allowWindowOps: true
+*loginShell: true
+*geometry: 100
+*TrimSelection: true
+*charClass: 33:48,37:48,43-47:48,64:48
+
 

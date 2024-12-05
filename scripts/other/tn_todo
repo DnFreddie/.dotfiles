@@ -1,0 +1,4 @@
+#!/usr/bin/bash
+TODO_DIR="$HOME/Documents/todo.md "
+vim "$TODO_DIR" 
+

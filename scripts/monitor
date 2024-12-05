@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+monintor=$(xrandr | grep " connected" | sed -n '2p' | awk '{print $1}')
+xrandr --output "$monintor" --auto --right-of eDP-1
+
+

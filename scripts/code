@@ -1,0 +1,7 @@
+#!/usr/bin/perl -T
+while (<>)
+{
+    chop;
+    my $br = "`" x 3;
+    print "$br$_\n$br\n";
+}

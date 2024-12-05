@@ -20,7 +20,7 @@ fi
  fi 
 
 #  ------------- Options --------------------
-set -o vi
+#set -o vi
 shopt -s checkwinsize
 shopt -s expand_aliases
 shopt -s histappend
@@ -36,34 +36,39 @@ shopt -s histverify
 shopt -s cdspell
 
 #---------------Aliases---------------
-alias play="ansible-playbook"
+alias sys="systemctl"
+alias sysu="systemctl --user"
+alias l="bat -p"
+alias k='kubectl'
+alias chmox='chmod +x'
+alias vi="vim"
+alias v="nvim"
 alias d="podman"
 alias gits="git status"
-alias "?"="ddg"
-alias pf="pandoc -f markdown -t gfm"
-alias vs="sudo -E nvim "
-alias "??"="gpt"
-alias gitl="git log -n 5 --graph --decorate --oneline"
 alias issue="gh issue create"
-alias cat="bat -p"
-alias cl="clear"
-alias vi="nvim"
-#alias tn="tmux new-session -s \$(pwd | sed 's/.*\///g')"
-alias grep='grep --color=auto'
+alias iss="gh issue list"
+#---------------Colors---------------
+alias gm="env XDG_CURRENT_DESKTOP=GNOME gnome-control-center"
+alias gitl="git log -n 5 --graph --decorate --oneline"
 alias path='echo -e "${PATH//:/\\n}"'
-alias ls="ls --color=auto"
 alias py="python3"
 alias la="ls -a"
 alias ll='ls -lha'
-alias dump='tmux capture-pane -p -S - | nvim'
+alias grep='grep --color=auto'
+alias ls="ls --color=auto"
 alias diff='diff --color=auto'
 alias ip='ip --color=auto'
-alias k='kubectl'
-
+#---------------Ansible---------------
+alias ap='ansible-playbook'
+alias a='ansible'
+alias an='ansible-navigator'
+alias ac='ansible-playbook -C'
+alias ads='ansible-doc -s '
+alias ad='ansible-doc'
+#---------------Molecule---------------
+alias m="molecule"
+alias mt="molecule test  --destroy=never"
 #---------------Binds---------------
-# owncomp=(awk)
-# for i in ${owncomp[@]};do complete -C '$HOME/scripts/snippets/$i' $i;done
-bind '"\C-l": clear-screen'
 bind 'set bell-style none'
 bind "set show-all-if-ambiguous on"
 bind "set completion-ignore-case on"
@@ -72,165 +77,125 @@ bind '"\e[Z": menu-complete-backward'
 bind '"\t": menu-complete'
 
 #---------------Functions---------------
-ram() {
-  ps aux | awk '{print $6/1024 " MB\t\t" $11}' | sort -n
-}
-
-hed() {
-  head -n1 "$@" | perl -lane 'for my $i (0..$#F) { print "$i: $F[$i]" }'
-
-}
 
 hh() {
+    history -a
+    history -r
 
-  history -a # Append new history lines to the HISTFILE
-  history -r # Read history from HISTFILE into memory
-  local selected
-  selected="$(history | perl -lane 'print join(" ", @F[1..$#F])' | perl -ne 'print unless $seen{$_}++' | fzf --tac --layout=reverse)"
+    local selected
+    selected="$(history | awk '{first=$1;$1=""; print substr($0,2)}' | awk '!seen[$0]++' | fzf --tac --layout=reverse)"
 
-  if [ -n "$selected" ]; then
-    echo "$selected"
-  else
-    echo "No command selected."
-
-  fi
-
-}
-
-#---------------Editor Commands---------------
-
-tn() {
-    local COLOR_INDEX="\033[38;2;181;126;220m"
-    local COLOR_SESSION_NAME="\033[1;38;2;150;150;170m"
-    local COLOR_SESSION_DESCRIPTION="\033[38;2;120;120;120m"
-    local COLOR_RESET="\033[0m"
-
-    tcreate() { 
-        if [ -z "$TMUX" ]; then 
-            cd "$2" && tmux new -As "$1"; 
-        else 
-            tmux detach -E "cd '$2' && tmux new -A -s '$1'"; 
-        fi 
-    }
-
-    case $1 in
-        -c)
-            tcreate "$(basename "$PWD")" "$PWD"
-            return
-            ;;
-        -p)
-            if [ -n "$2" ] && [ -d "$2" ]; then
-                tcreate "$(basename "$2")" "$2"
-            else
-                echo "Error: Invalid path or path not provided"
-                return 1
-            fi
-            return
-            ;;
-    esac
-
-    if [ -n "$1" ]; then
-        sessions=$(tmux list-sessions -F '#{session_name}')
-        matches=$(echo "$sessions" | grep -i "^$1")
-
-        if [ -z "$matches" ]; then
-            matches=$(echo "$sessions" | grep -i "$1")
-        fi
-
-        if [ -z "$matches" ]; then
-            echo "No matching session found for '$1'"
-            return 1
-        elif [ "$(echo "$matches" | wc -l)" -eq 1 ]; then
-            session_name="$matches"
-            tcreate "$session_name" "$PWD"
-            return
-        else
-            echo "Multiple matching sessions found:"
-            select session_name in $matches; do
-                [ -n "$session_name" ] && break
-            done
-            tcreate "$session_name" "$PWD"
-            return
-        fi
-    fi
-
-    if ! tmux list-sessions > /dev/null 2>&1; then
-        tcreate "$(basename "$PWD")" "$PWD"
-        return
-    fi
-
-    printf "Select:\n"
-    mapfile -t sessions_array < <(tmux list-sessions)
-    for i in "${!sessions_array[@]}"; do
-        session_name="${sessions_array[$i]%%:*}"
-        session_description="${sessions_array[$i]#*:}"
-        printf "${COLOR_INDEX}%d.${COLOR_RESET} " "$((i + 1))"
-        printf "${COLOR_SESSION_NAME}%s${COLOR_RESET} " "$session_name"
-        printf "${COLOR_SESSION_DESCRIPTION}%s${COLOR_RESET}\n" "$session_description"
-    done
-    printf ":"
-    read -r choice
-    if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [[ "$choice" -le "${#sessions_array[@]}" ]]; then
-        selected="${sessions_array[$((choice - 1))]}"
-        session_name="${selected%%:*}"
-        tcreate "$session_name" "$PWD"
-    elif [ -n "$choice" ]; then
-        echo "Invalid selection!"
-    else
-        echo "No session selected!"
+    if [[ -n "$selected" ]]; then
+        READLINE_LINE="$selected"
+        READLINE_POINT=${#selected}
     fi
 }
+
+# Bind `hh` function to a keyboard shortcut (Ctrl+G)
+bind -x '"\C-g": hh'
 
 
 #---------------Utilites-----------------------
-ex() {
-  if [ -f "$1" ]; then
-    case "$1" in
-      *.tar.bz2) tar xjf "$1" ;;
-      *.tar.gz) tar xzf "$1" ;;
-      *.bz2) bunzip2 "$1" ;;
-      *.rar) unrar x "$1" ;;
-      *.gz) gunzip "$1" ;;
-      *.tar) tar xf "$1" ;;
-      *.tbz2) tar xjf "$1" ;;
-      *.tgz) tar xzf "$1" ;;
-      *.zip) unzip "$1" ;;
-      *.Z) uncompress "$1" ;;
-      *.7z) 7z x "$1" ;;
-      *) echo "$1 cannot be extracted via ex();;" ;;
-    esac
-  else
-    echo "$1 is not a valid file"
-  fi
-}
+
+  tn() {
+      local COLOR_INDEX="\033[38;2;181;126;220m"
+      local COLOR_SESSION_NAME="\033[1;38;2;150;150;170m"
+      local COLOR_SESSION_DESCRIPTION="\033[38;2;120;120;120m"
+      local COLOR_RESET="\033[0m"
+
+      tcreate() {
+          if [ -z "$TMUX" ]; then
+              cd "$2" && tmux new -As "$1";
+          else
+              tmux detach -E "cd '$2' && tmux new -A -s '$1'";
+          fi
+      }
+
+      case $1 in
+          -c)
+              tcreate "$(basename "$PWD")" "$PWD"
+              return
+              ;;
+          -p)
+              if [ -n "$2" ] && [ -d "$2" ]; then
+                  tcreate "$(basename "$2")" "$2"
+              else
+                  echo "Error: Invalid path or path not provided"
+                  return 1
+              fi
+              return
+              ;;
+      esac
+
+      if [ -n "$1" ]; then
+          sessions=$(tmux list-sessions -F '#{session_name}')
+          matches=$(echo "$sessions" | grep -i "^$1")
+
+          if [ -z "$matches" ]; then
+              matches=$(echo "$sessions" | grep -i "$1")
+          fi
+
+          if [ -z "$matches" ]; then
+              echo "No matching session found for '$1'"
+              return 1
+          elif [ "$(echo "$matches" | wc -l)" -eq 1 ]; then
+              session_name="$matches"
+              tcreate "$session_name" "$PWD"
+              return
+          else
+              echo "Multiple matching sessions found:"
+              select session_name in $matches; do
+                  [ -n "$session_name" ] && break
+              done
+              tcreate "$session_name" "$PWD"
+              return
+          fi
+      fi
+
+      if ! tmux list-sessions > /dev/null 2>&1; then
+          tcreate "$(basename "$PWD")" "$PWD"
+          return
+      fi
+
+      printf "Select:\n"
+      mapfile -t sessions_array < <(tmux list-sessions)
+      for i in "${!sessions_array[@]}"; do
+          session_name="${sessions_array[$i]%%:*}"
+          session_description="${sessions_array[$i]#*:}"
+          printf "${COLOR_INDEX}%d.${COLOR_RESET} " "$((i + 1))"
+          printf "${COLOR_SESSION_NAME}%s${COLOR_RESET} " "$session_name"
+          printf "${COLOR_SESSION_DESCRIPTION}%s${COLOR_RESET}\n" "$session_description"
+      done
+      printf ":"
+      read -r choice
+      if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [[ "$choice" -le "${#sessions_array[@]}" ]]; then
+          selected="${sessions_array[$((choice - 1))]}"
+          session_name="${selected%%:*}"
+          tcreate "$session_name" "$PWD"
+      elif [ -n "$choice" ]; then
+          echo "Invalid selection!"
+      else
+          echo "No session selected!"
+      fi
+  }
+
 
 open() {
   if [ -n "$1" ]; then
-    xdg-open "$1"
+    if [ -d "$1" ]; then
+      selected_file=$(find "$1" -type f | fzf --layout=reverse)
+      [ -n "$selected_file" ] && xdg-open "$selected_file" &
+    else
+      xdg-open "$1" &
+    fi
   else
-    xdg-open "$(find . -type f | fzf --layout=reverse)"
+    selected_file=$(find . -type f | fzf --layout=reverse)
+    [ -n "$selected_file" ] && xdg-open "$selected_file" &
   fi
 }
 
-pathappend() {
-  for arg in "$@"; do
-    test -d "$arg" || continue
-
-    PATH=${PATH//:"$arg:"/:}
-
-    PATH=${PATH/#"$arg:"/}
-
-    PATH=${PATH/%":$arg"/}
-
-    export PATH="${PATH}${PATH:+":$arg"}"
-  done
-} && export -f pathappend
 
 
-ddg() {
-    local search="${*// /+}"  
-    w3m -o confirm_qq=false "https://lite.duckduckgo.com/lite?q=$search"
-}
 #------------- Bash settings --------------------
 
 export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
@@ -238,10 +203,12 @@ export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=10000
 export HISTFILESIZE=10000
-export LS_COLORS="*.py=04;33:*.csv=02;36:*.tar=00;31:*.go=38;5;93:*.rs=01;31:*.json=38;5;208:*.nix=36;40;93:$LS_COLORS"
+export LS_COLORS="*.py=33:*.yaml=00;32:*.yml=00;32:*.lua=02;36:*.tar=00;31:*.go=38;5;93:*.rs=01;31:*.json=38;5;208:*.nix=36;40;93:ex=01;38;5;118:$LS_COLORS"
 
-export MANPAGER="nvim +Man!"
-export EDITOR="nvim"
+#export MANPAGER="vim +Man!"
+export MANPAGER="vim -M +MANPAGER -c 'set ft=man nomod nolist' -"
+export EDITOR="vim"
+export VISUAL="vim"
 export LAB="$HOME/github.com/DnFreddie/"
 export JUNK="$HOME/.junk/"
 
@@ -284,13 +251,14 @@ configure_prompt() {
 #---------------Setup env---------------
 setup_environment() {
 #---------------Go-related settings---------------
+  export SYSTEMD_EDITOR="/usr/bin/vim"
   export GOROOT="$HOME/.local/go"
   export GOPATH="$HOME/.go"
   export PATH="$PATH:$GOROOT/bin:$GOPATH/bin"
 #---------------Export path---------------
   export PATH="$PATH:$HOME/.local/bin/"
-  export PATH="$PATH:$HOME/.local/bin/"
   export PATH="$PATH:$HOME/scripts/"
+  export PATH="$HOME/.local/lib/nodejs/node_modules/.bin:$PATH"
   # Cargo (Rust) setup
   if [ -f "$HOME/.cargo/env" ]; then
     . "$HOME/.cargo/env"
@@ -298,9 +266,6 @@ setup_environment() {
 
 #----------------------------------------------
   # Terraform autocomplete
-  if command -v terraform &> /dev/null; then
-    complete -C /usr/bin/terraform terraform
-  fi
 }
 
 setup_environment
@@ -311,3 +276,4 @@ unset -f configure_prompt
 
 # Things added automatically
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
