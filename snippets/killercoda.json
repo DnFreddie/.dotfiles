@@ -1,0 +1,36 @@
+{
+    "title": "POSIX way of contaiers (systemd)",
+    "description": "Learn how to use systemd cotainers ",
+    "details": {
+        "intro": {
+            "text": "intro.md",
+            "background": "setup.sh"
+        },
+        "steps": [
+            {
+                "title": "Blinded by the path",
+                "text": "step1/text.md",
+                "verify": "step1/verify.sh"
+            },
+            {
+                "title": "Linger ",
+                "text": "step2/step2.md",
+                "verify": "step2/verify.sh"
+            },
+            {
+        ],
+           "assets": {
+	       "host01": [
+            {"file": "hosts", "target": "~/"},
+            {"file": "template.yml", "target": "/answers"},
+            {"file": "template.j2", "target": "/answers"}
+         ]
+           },
+        "finish": {
+            "text": "finish.md"
+        }
+    },
+    "backend": {
+        "imageid": "kubernetes-kubeadm-2nodes"
+    }
+}
