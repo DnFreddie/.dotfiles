@@ -2,7 +2,7 @@ set noerrorbells
 set vb t_vb=
 set mouse=a
 let mapleader = " "
-set path-=/usr/include
+set path=.,**
 set background=dark
 syntax on
 " Search settings
@@ -22,7 +22,7 @@ else
     set grepprg=grep\ -rI\ -n\ -i
 endif
 
-if v:progname =~? 'vim'
+if v:progname =~? 'vim' || v:progname =~? 'nvim'
 set tabstop=4
 set softtabstop=4
 set shiftwidth=4
@@ -38,21 +38,26 @@ set wildmode=longest:full,full
 autocmd BufWritePre *.yml,*.md,*.go,*.py,*.f90,*.f95,*.for :%s/\s\+$//e
 match Visual '\s\+$'
 
-set undodir=undodir
-set undofile
+autocmd BufNewFile,BufRead *.container set filetype=ini
 
-if has('nvim')
-    let undodir = expand('~/.config/nvim/undodir')
-else
-    let undodir = expand('~/.vim/undodir')
+if has("persistent_undo")
+    if v:progname =~ 'nvim'
+        let target_path = expand('~/.vim/undodir_nvim/')
+    else
+        let target_path = expand('~/.vim/undodir/')
+    endif
+
+    if !isdirectory(target_path)
+        call mkdir(target_path, "p", 0700)
+    endif
+
+    let &undodir = target_path
+    set undofile
 endif
 
-if !isdirectory(undodir)
-  call mkdir(undodir, 'p', 0700)
-endif
 "--------------- Key binds ---------------
-nnoremap <leader>e :find
-nnoremap <leader><Space> :Lexplore<CR>
+nnoremap <leader>e :find 
+nnoremap <leader><Space> :Explore<CR>
 nnoremap <C-d> <C-d>zz
 nnoremap <C-u> <C-u>zz
 nnoremap <leader>s :%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>
@@ -146,6 +151,35 @@ augroup CloseLoclistWindowGroup
 augroup END
 
 filetype plugin on
+" Auto commands
+augroup myCmds
+    au!
+    autocmd VimEnter * silent !echo -ne "\e[2 q"
+augroup END
+
+" Paste mode configuration
+function! XTermPasteBegin()
+    set pastetoggle=<Esc>[201~
+    set paste
+    return ""
+endfunction
+
+inoremap <special> <expr> <Esc>[201~ XTermPasteBegin()
+" Auto-closing pairs
+function! ClosePair(opening, closing)
+    let col = col('.')
+    execute "normal! i" . a:opening
+    execute "normal! a" . a:closing
+    call cursor(line('.'), col)
+endfunction
+
+inoremap ( ()<Left>
+inoremap [ []<Left>
+inoremap { {}<Left>
+inoremap ' ''<Left>
+inoremap " ""<Left>
+
+
 
   if has('clipboard')
         vnoremap <Space>y "+y

@@ -44,9 +44,13 @@ alias chmox='chmod +x'
 alias vi="vim"
 alias v="nvim"
 alias d="podman"
+alias dps="docker ps --format 'table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'"
+alias dpi="docker images --format 'table {{.Repository}}\t{{.Tag}}\t{{.Size}}'"
+
 alias gits="git status"
 alias issue="gh issue create"
 alias iss="gh issue list"
+alias lw="librewolf"
 #---------------Colors---------------
 alias gm="env XDG_CURRENT_DESKTOP=GNOME gnome-control-center"
 alias gitl="git log -n 5 --graph --decorate --oneline"
@@ -125,6 +129,15 @@ bind -x '"\C-g": hh'
               fi
               return
               ;;
+          -l ) 
+              # Create the 'edit' windo    ;;
+            tmux rename-window -t :1 'edit' || tmux new-window -t :1 -n 'edit' 2>/dev/null
+            tmux rename-window -t :2 'run' || tmux new-window -t :2 -n 'run' 2>/dev/null
+            tmux rename-window -t :3 'ref' || tmux new-window -t :3 -n 'ref' 2>/dev/null
+            tmux select-window -t :1 2>/dev/null
+
+            return
+            ;;
       esac
 
       if [ -n "$1" ]; then
