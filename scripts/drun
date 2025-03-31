@@ -1,5 +1,6 @@
 #!/usr/bin/sh
 
+export PATH="$HOME/.local/bin:$PATH"
 DMENU_BACKGROUND="#1c1b22"
 DMENU_FOREGROUND="#c8c3e9"
 DMENU_SEL_BACKGROUND="#c678dd"
