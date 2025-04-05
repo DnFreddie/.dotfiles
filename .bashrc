@@ -8,6 +8,8 @@ if ! shopt -oq posix; then
     source "/usr/share/bash-completion/bash_completion"
   elif [ -f /etc/bash_completion ]; then
     source "/etc/bash_completion"
+  elif [ -f "$HOME/.bash_completion" ]; then
+    source "/etc/bash_completion"
   fi
 else
   printf "No complitons found\n"
@@ -38,7 +40,9 @@ shopt -s cdspell
 #---------------Aliases---------------
 alias sys="systemctl"
 alias sysu="systemctl --user"
-alias l="bat -p"
+alias c="bat -p"
+alias grepi="grep -i -r --exclude-dir=.git"
+alias cat="bat -p"
 alias k='kubectl'
 alias chmox='chmod +x'
 alias vi="vim"
@@ -47,6 +51,7 @@ alias d="podman"
 alias dps="docker ps --format 'table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'"
 alias dpi="docker images --format 'table {{.Repository}}\t{{.Tag}}\t{{.Size}}'"
 
+alias gs="git switch"
 alias gits="git status"
 alias issue="gh issue create"
 alias iss="gh issue list"
@@ -133,7 +138,6 @@ bind -x '"\C-g": hh'
               # Create the 'edit' windo    ;;
             tmux rename-window -t :1 'edit' || tmux new-window -t :1 -n 'edit' 2>/dev/null
             tmux rename-window -t :2 'run' || tmux new-window -t :2 -n 'run' 2>/dev/null
-            tmux rename-window -t :3 'ref' || tmux new-window -t :3 -n 'ref' 2>/dev/null
             tmux select-window -t :1 2>/dev/null
 
             return
@@ -290,3 +294,6 @@ unset -f configure_prompt
 # Things added automatically
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
