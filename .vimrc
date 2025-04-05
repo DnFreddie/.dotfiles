@@ -19,7 +19,7 @@ set grepformat=%f:%l:%c:%m
 if executable('rg')
     set grepprg=rg\ --vimgrep\ --smart-case\ --no-heading
 else
-    set grepprg=grep\ -rI\ -n\ -i
+    set grepprg=grep\ -rI\ -n\ -i\ -E\ --exclude-dir=.git
 endif
 
 if v:progname =~? 'vim' || v:progname =~? 'nvim'
@@ -69,13 +69,13 @@ nmap <C-p> mzyyP`z
 nnoremap <leader>o :execute 'tcd ' . fnameescape(expand('%:h'))<CR>fu
 
 nnoremap <Leader>co :copen<CR>
+nnoremap <Leader>cm :make \| copen<CR>
 nnoremap <Leader>cc :cclose<CR>
 nnoremap <Leader>cp :cprev<CR>
 nnoremap <Leader>cn :cnext<CR>
-command! -nargs=+ G execute 'vimgrep  <args>' | copen
-nnoremap <leader>fg :vim // `git ls-files`<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
+nnoremap <leader>fc :silent grep!  `git ls-files` \| copen \| redraw!  <Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><left>
 
-
+nnoremap <leader>fg :Grep 
 "--------------- Plugins ---------------
 if empty(glob('~/.vim/autoload/plug.vim'))
     finish
@@ -118,9 +118,17 @@ au FileType go nmap <leader>m ilog.Print("made")<CR><ESC>
 au FileType go nmap <leader>n iif err != nil {return err}<CR><ESC>
 
 nnoremap <leader>u :UndotreeToggle<CR>
+"--------------- Compilers ---------------
+autocmd Filetype go set makeprg=go\ build
+" Ansible-Lint configuration
+autocmd FileType yaml setlocal makeprg=ansible-lint\ -f\ pep8\ --nocolor\ --parseable\ 
+autocmd FileType yaml setlocal errorformat=%f:%l:\ %m
+autocmd FileType python setlocal makeprg=python\ %
 
 "--------------- Color scheme ---------------
+
 if !empty(glob('~/.vim/plugged/gruvbox'))
+    let g:gruvbox_italic=1
     let g:gruvbox_contrast_dark = 'hard'
     colorscheme gruvbox
 else
@@ -188,7 +196,23 @@ inoremap [ []<Left>
 inoremap { {}<Left>
 inoremap ' ''<Left>
 inoremap " ""<Left>
+"
+"https://gist.github.com/romainl/56f0c28ef953ffc157f36cc495947ab3"
+function! Grep(...)
+	return system(join([&grepprg] + [expandcmd(join(a:000, ' '))], ' '))
+endfunction
 
+command! -nargs=+ -complete=file_in_path -bar Grep  cgetexpr Grep(<f-args>)
+command! -nargs=+ -complete=file_in_path -bar LGrep lgetexpr Grep(<f-args>)
+
+cnoreabbrev <expr> grep  (getcmdtype() ==# ':' && getcmdline() ==# 'grep')  ? 'Grep'  : 'grep'
+cnoreabbrev <expr> lgrep (getcmdtype() ==# ':' && getcmdline() ==# 'lgrep') ? 'LGrep' : 'lgrep'
+
+augroup quickfix
+	autocmd!
+	autocmd QuickFixCmdPost cgetexpr cwindow
+	autocmd QuickFixCmdPost lgetexpr lwindow
+augroup END
 
 
   if has('clipboard')
