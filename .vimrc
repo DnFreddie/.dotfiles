@@ -68,6 +68,14 @@ vnoremap K :m '<-2<CR>gv=gv
 nmap <C-p> mzyyP`z
 nnoremap <leader>o :execute 'tcd ' . fnameescape(expand('%:h'))<CR>fu
 
+nnoremap <Leader>co :copen<CR>
+nnoremap <Leader>cc :cclose<CR>
+nnoremap <Leader>cp :cprev<CR>
+nnoremap <Leader>cn :cnext<CR>
+command! -nargs=+ G execute 'vimgrep  <args>' | copen
+nnoremap <leader>fg :vim // `git ls-files`<Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left>
+
+
 "--------------- Plugins ---------------
 if empty(glob('~/.vim/autoload/plug.vim'))
     finish
@@ -129,6 +137,8 @@ else
 endif
 
 set cinoptions+=:0 laststatus=0
+highlight SpellBad cterm=underline gui=underline ctermfg=NONE guifg=NONE ctermbg=NONE guibg=NONE
+
 "--------------- Markdown settings ---------------
 hi Violet guifg=#af87ff ctermfg=141
 hi! link mkdHeading Violet
