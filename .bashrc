@@ -42,7 +42,6 @@ alias sys="systemctl"
 alias sysu="systemctl --user"
 alias c="bat -p"
 alias grepi="grep -i -r --exclude-dir=.git"
-alias cat="bat -p"
 alias k='kubectl'
 alias chmox='chmod +x'
 alias vi="vim"
@@ -50,15 +49,20 @@ alias v="nvim"
 alias d="podman"
 alias dps="docker ps --format 'table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'"
 alias dpi="docker images --format 'table {{.Repository}}\t{{.Tag}}\t{{.Size}}'"
-
-alias gs="git switch"
+#---------------Terraform---------------
+alias tfp="terraform plan"
+alias tfd="terraform destroy"
+alias tfa="terraform apply"
+#---------------gits---------------
+alias gitss="git switch"
 alias gits="git status"
 alias issue="gh issue create"
 alias iss="gh issue list"
 alias lw="librewolf"
-#---------------Colors---------------
-alias gm="env XDG_CURRENT_DESKTOP=GNOME gnome-control-center"
 alias gitl="git log -n 5 --graph --decorate --oneline"
+#---------------Colors---------------
+alias l="less"
+alias lr="less -R"
 alias path='echo -e "${PATH//:/\\n}"'
 alias py="python3"
 alias la="ls -a"
@@ -77,6 +81,20 @@ alias ad='ansible-doc'
 #---------------Molecule---------------
 alias m="molecule"
 alias mt="molecule test  --destroy=never"
+#---------------Binds---------------
+bind 'set bell-style none'
+bind "set show-all-if-ambiguous on"
+bind "set completion-ignore-case on"
+bind "set menu-complete-display-prefix on"
+bind '"\e[Z": menu-complete-backward'
+bind '"\t": menu-complete'
+alias gs="git switch"
+alias gits="git status"
+alias issue="gh issue create"
+alias iss="gh issue list"
+alias lw="librewolf"
+alias l="less"
+alias lr="less -R"
 #---------------Binds---------------
 bind 'set bell-style none'
 bind "set show-all-if-ambiguous on"
@@ -214,8 +232,8 @@ open() {
 
 
 #------------- Bash settings --------------------
+export PROMPT_COMMAND='history -a; history -r'
 
-export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 
 export HISTCONTROL=ignoredups:erasedups
 export HISTSIZE=10000
@@ -251,19 +269,12 @@ configure_prompt() {
     fi
   }
 
-  getDeep() {
-    local deepness=$SHLVL
-    if [ -n "$TMUX" ]; then
-      deepness=$((deepness - 1))
-    fi
-    if [ "$deepness" -eq 1 ]; then
-      printf "\001\e[38;2;150;150;170m\002$\001\e[0m\002"  
-    else
-      printf "\e[38;2;150;150;170m%s$\e[0m" "$deepness"    
-    fi
-  }
-  
-  PS1="${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+($(basename "$VIRTUAL_ENV"))─}\[\e[38;2;230;230;250m\]\u \[\e[38;2;150;150;170m\]\w\[\e[37m\]\$(git_branch)\n\$(getDeep) "
+
+  PS1="${debian_chroot:+($debian_chroot)}\
+\[\e[38;2;211;134;155m\]\u \[\e[38;2;146;131;116m\]\w\
+\[\e[38;2;131;165;152m\]\$(git_branch)\n\
+\[\e[38;2;250;189;47m\]\$ \[\e[0m\]${VIRTUAL_ENV:+ ($(basename "$VIRTUAL_ENV"))}"
+
 }
 #---------------Setup env---------------
 setup_environment() {
@@ -282,7 +293,6 @@ setup_environment() {
   fi
 
 #----------------------------------------------
-  # Terraform autocomplete
 }
 
 setup_environment
