@@ -34,7 +34,10 @@ set updatetime=100
 set numberwidth=4
 set omnifunc=syntaxcomplete#Complete
 set wildmenu
+set spell
 set wildmode=longest:full,full
+let g:netrw_banner = 0  " Hide the top banner
+let g:netrw_winsize = 25  " Set default width
 autocmd BufWritePre *.yml,*.md,*.go,*.py,*.f90,*.f95,*.for :%s/\s\+$//e
 match Visual '\s\+$'
 
@@ -57,6 +60,7 @@ endif
 
 "--------------- Key binds ---------------
 nnoremap <leader>e :find 
+nnoremap <leader>w :b 
 nnoremap <leader><Space> :Explore<CR>
 nnoremap <C-d> <C-d>zz
 nnoremap <C-u> <C-u>zz
@@ -87,6 +91,8 @@ call plug#begin('~/.vim/plugged')
     Plug 'mbbill/undotree'
     Plug 'prabirshrestha/vim-lsp'
     Plug 'preservim/vim-markdown'
+    Plug 'hashivim/vim-terraform'
+    Plug 'lepture/vim-jinja'
     if has('nvim')
         Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
         Plug 'neoclide/coc.nvim', {'branch': 'release'}
@@ -124,6 +130,7 @@ autocmd Filetype go set makeprg=go\ build
 autocmd FileType yaml setlocal makeprg=ansible-lint\ -f\ pep8\ --nocolor\ --parseable\ 
 autocmd FileType yaml setlocal errorformat=%f:%l:\ %m
 autocmd FileType python setlocal makeprg=python\ %
+autocmd FileType terraform setlocal makeprg=terraform\ validate\ %
 
 "--------------- Color scheme ---------------
 
