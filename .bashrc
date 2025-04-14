@@ -4,22 +4,22 @@
 
 # ------------- Complitons --------------------
 if ! shopt -oq posix; then
-  if [ -f "/usr/share/bash-completion/bash_completion" ]; then
-    source "/usr/share/bash-completion/bash_completion"
-  elif [ -f /etc/bash_completion ]; then
-    source "/etc/bash_completion"
-  elif [ -f "$HOME/.bash_completion" ]; then
-    source "/etc/bash_completion"
-  fi
+	if [ -f "/usr/share/bash-completion/bash_completion" ]; then
+		source "/usr/share/bash-completion/bash_completion"
+	elif [ -f /etc/bash_completion ]; then
+		source "/etc/bash_completion"
+	elif [ -f "$HOME/.bash_completion" ]; then
+		source "/etc/bash_completion"
+	fi
 else
-  printf "No complitons found\n"
+	printf "No complitons found\n"
 fi
 
- if ! shopt -oq posix; then 
- for i in "$HOME/.local/share/completions/"*; do
-     [[ -r "$i" ]] &&   source "$i"
- done
- fi 
+if ! shopt -oq posix; then
+	for i in "$HOME/.local/share/completions/"*; do
+		[[ -r "$i" ]] && source "$i"
+	done
+fi
 
 #  ------------- Options --------------------
 #set -o vi
@@ -49,6 +49,8 @@ alias v="nvim"
 alias d="podman"
 alias dps="docker ps --format 'table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'"
 alias dpi="docker images --format 'table {{.Repository}}\t{{.Tag}}\t{{.Size}}'"
+# alias "apt history"= "grep 'install' /var/log/dpkg.log* | sort | cut -f1,2,4 -d ''"
+
 #---------------Terraform---------------
 alias tfp="terraform plan"
 alias tfd="terraform destroy"
@@ -58,8 +60,12 @@ alias gitss="git switch"
 alias gits="git status"
 alias issue="gh issue create"
 alias iss="gh issue list"
-alias lw="librewolf"
-alias gitl="git log -n 5 --graph --decorate --oneline"
+alias gitl="git log  --graph --decorate --oneline -n 5"
+alias gitb="git branch"
+alias gitd="git diff"
+alias gitr="git reflog"
+alias gitw="git worktree"
+
 #---------------Colors---------------
 alias l="less"
 alias lr="less -R"
@@ -89,7 +95,7 @@ bind "set menu-complete-display-prefix on"
 bind '"\e[Z": menu-complete-backward'
 bind '"\t": menu-complete'
 alias gs="git switch"
-alias gits="git status"
+alias gits="git status -s"
 alias issue="gh issue create"
 alias iss="gh issue list"
 alias lw="librewolf"
@@ -258,19 +264,18 @@ export LESS_TERMCAP_se=$'\E[0m'                              # Reset search high
 #---------------Prompt---------------
 
 configure_prompt() {
-  git_branch() {
-    local branch
-    if branch=$(git rev-parse --abbrev-ref HEAD 2> /dev/null); then
-      if [[ "$branch" != "HEAD" ]]; then
-        echo -n "($branch)"
-      else
-        echo -n "(detached)"
-      fi
-    fi
-  }
+	git_branch() {
+		local branch
+		if branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); then
+			if [[ "$branch" != "HEAD" ]]; then
+				echo -n "($branch)"
+			else
+				echo -n "(detached)"
+			fi
+		fi
+	}
 
-
-  PS1="${debian_chroot:+($debian_chroot)}\
+	PS1="${debian_chroot:+($debian_chroot)}\
 \[\e[38;2;211;134;155m\]\u \[\e[38;2;146;131;116m\]\w\
 \[\e[38;2;131;165;152m\]\$(git_branch)\n\
 \[\e[38;2;250;189;47m\]\$ \[\e[0m\]${VIRTUAL_ENV:+ ($(basename "$VIRTUAL_ENV"))}"
