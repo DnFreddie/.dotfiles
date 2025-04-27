@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+
+while IFS=':' read -r LINK_NAME LINK_URL; do
+  echo -n "[$LINK_NAME]($LINK_URL)"
+done

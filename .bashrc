@@ -38,6 +38,7 @@ shopt -s histverify
 shopt -s cdspell
 
 #---------------Aliases---------------
+alias tn="g s tn"
 alias sys="systemctl"
 alias sysu="systemctl --user"
 alias c="bat -p"
@@ -101,6 +102,7 @@ alias iss="gh issue list"
 alias lw="librewolf"
 alias l="less"
 alias lr="less -R"
+alias view='vim -R'
 #---------------Binds---------------
 bind 'set bell-style none'
 bind "set show-all-if-ambiguous on"
@@ -129,96 +131,6 @@ bind -x '"\C-g": hh'
 
 
 #---------------Utilites-----------------------
-
-  tn() {
-      local COLOR_INDEX="\033[38;2;181;126;220m"
-      local COLOR_SESSION_NAME="\033[1;38;2;150;150;170m"
-      local COLOR_SESSION_DESCRIPTION="\033[38;2;120;120;120m"
-      local COLOR_RESET="\033[0m"
-
-      tcreate() {
-          if [ -z "$TMUX" ]; then
-              cd "$2" && tmux new -As "$1";
-          else
-              tmux detach -E "cd '$2' && tmux new -A -s '$1'";
-          fi
-      }
-
-      case $1 in
-          -c)
-              tcreate "$(basename "$PWD")" "$PWD"
-              return
-              ;;
-          -p)
-              if [ -n "$2" ] && [ -d "$2" ]; then
-                  tcreate "$(basename "$2")" "$2"
-              else
-                  echo "Error: Invalid path or path not provided"
-                  return 1
-              fi
-              return
-              ;;
-          -l ) 
-              # Create the 'edit' windo    ;;
-            tmux rename-window -t :1 'edit' || tmux new-window -t :1 -n 'edit' 2>/dev/null
-            tmux rename-window -t :2 'run' || tmux new-window -t :2 -n 'run' 2>/dev/null
-            tmux select-window -t :1 2>/dev/null
-
-            return
-            ;;
-      esac
-
-      if [ -n "$1" ]; then
-          sessions=$(tmux list-sessions -F '#{session_name}')
-          matches=$(echo "$sessions" | grep -i "^$1")
-
-          if [ -z "$matches" ]; then
-              matches=$(echo "$sessions" | grep -i "$1")
-          fi
-
-          if [ -z "$matches" ]; then
-              echo "No matching session found for '$1'"
-              return 1
-          elif [ "$(echo "$matches" | wc -l)" -eq 1 ]; then
-              session_name="$matches"
-              tcreate "$session_name" "$PWD"
-              return
-          else
-              echo "Multiple matching sessions found:"
-              select session_name in $matches; do
-                  [ -n "$session_name" ] && break
-              done
-              tcreate "$session_name" "$PWD"
-              return
-          fi
-      fi
-
-      if ! tmux list-sessions > /dev/null 2>&1; then
-          tcreate "$(basename "$PWD")" "$PWD"
-          return
-      fi
-
-      printf "Select:\n"
-      mapfile -t sessions_array < <(tmux list-sessions)
-      for i in "${!sessions_array[@]}"; do
-          session_name="${sessions_array[$i]%%:*}"
-          session_description="${sessions_array[$i]#*:}"
-          printf "${COLOR_INDEX}%d.${COLOR_RESET} " "$((i + 1))"
-          printf "${COLOR_SESSION_NAME}%s${COLOR_RESET} " "$session_name"
-          printf "${COLOR_SESSION_DESCRIPTION}%s${COLOR_RESET}\n" "$session_description"
-      done
-      printf ":"
-      read -r choice
-      if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [[ "$choice" -le "${#sessions_array[@]}" ]]; then
-          selected="${sessions_array[$((choice - 1))]}"
-          session_name="${selected%%:*}"
-          tcreate "$session_name" "$PWD"
-      elif [ -n "$choice" ]; then
-          echo "Invalid selection!"
-      else
-          echo "No session selected!"
-      fi
-  }
 
 
 open() {
