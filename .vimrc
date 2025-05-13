@@ -8,7 +8,7 @@ let mapleader = " "
 set path=.,**
 set background=dark
 syntax on
-set incsearch hlsearch ignorecase smartcase
+set incsearch  ignorecase smartcase "hlsearch
 set noswapfile
 set signcolumn=yes
 set wildignorecase
@@ -17,7 +17,6 @@ set termguicolors
 set grepformat=%f:%l:%c:%m
 set autoread
 set linebreak
-set relativenumber
 set shortmess=aoOtTI
 set ttyfast
 set viminfo='20,<1000,s1000
@@ -37,13 +36,14 @@ if v:progname =~? 'vi' && !has("eval")
   finish
 endif
 
+set hidden
 " =============================================
 " Search and Navigation
 " =============================================
-nnoremap n nzzzv
-nnoremap N Nzzzv
-noremap <expr> j (v:count > 5 ? "jzz" : "j")
-nnoremap <expr> k (v:count > 5 ? "kzz" : "k")
+""nnoremap n nzzzv
+""nnoremap N Nzzzv
+""noremap <expr> j (v:count > 5 ? "jzz" : "j")
+""nnoremap <expr> k (v:count > 5 ? "kzz" : "k")
 nnoremap <C-d> <C-d>zz
 nnoremap <C-u> <C-u>zz
 nnoremap <C-L> :nohl<CR><C-L>
@@ -58,11 +58,6 @@ augroup vimrc-sync-fromstart
   autocmd BufEnter * :syntax sync maxlines=200
 augroup END
 
-augroup vimrc_active_options
-  au!
-  au WinEnter,BufEnter * setlocal rnu nonu
-  au WinLeave,BufLeave * setlocal nornu nonu
-augroup END
 
 runtime! ftplugin/man.vim
 
@@ -143,8 +138,11 @@ let g:netrw_winsize = 25  " Set default width
 " Key Mappings
 " =============================================
 " General navigation and editing
-nnoremap <leader>e :find 
-nnoremap <leader>w :b 
+nnoremap <leader>e :find<Space>
+
+nnoremap <leader>w :ls<CR>:b<Space>
+
+nnoremap <leader>W :ls<CR>:tab sb<Space>
 nnoremap <leader><Space> :Explore<CR>
 nnoremap <leader>s :%s/\<<C-r><C-w>\>/<C-r><C-w>/gI<Left><Left><Left>
 nnoremap <leader>x :!chmod +x %<CR>
@@ -153,6 +151,10 @@ vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 nmap <C-p> mzyyP`z
 nnoremap <leader>o :execute 'tcd ' . fnameescape(expand('%:h'))<CR>fu
+nnoremap <leader>ca :!mksession ~/.vim/sessions/
+nnoremap <leader>cs :so ~/.vim/sessions/
+nnoremap <leader>l :<C-u>marks ASDFETasd<CR>:normal! `
+let @a = "ciW{{ \<C-r>\" \<Esc>"
 
 " Quickfix navigation
 nnoremap <Leader>co :copen<CR>
@@ -160,10 +162,10 @@ nnoremap <Leader>cm :make \| copen<CR>
 nnoremap <Leader>cc :cclose<CR>
 nnoremap <Leader>cp :cprev<CR>
 nnoremap <Leader>cn :cnext<CR>
-nnoremap <leader>fc :silent grep!  `git ls-files` \| copen \| redraw!  <Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><Left><left>
-nnoremap <leader>fg :Grep 
-""#nnoremap <leader>fc :silent grep! "<C-r>=expand("<cword>")<CR>" `git ls-files` | copen | redraw!<CR>
-nnoremap <leader>fc :silent grep! "<C-r>=expand("<cword>")<CR>" `git ls-files` \| copen \| redraw!<CR>
+nnoremap <leader>fg :Grep<space> 
+command! -nargs=1 GitGrep silent grep! <args> `git ls-files` | copen | redraw!
+nnoremap <leader>fc :GitGrep<space>
+
 
 " Completion
 set completeopt=menuone
@@ -297,10 +299,10 @@ endif
 set cinoptions+=:0 laststatus=0
 highlight SpellBad cterm=underline gui=underline ctermfg=NONE guifg=NONE ctermbg=NONE guibg=NONE
 
-hi Violet guifg=#af87ff ctermfg=141
-hi! link mkdHeading Violet
-hi! link mkdDelimiter Violet
-hi! link htmlH1 Violet
+""hi Violet guifg=#af87ff ctermfg=141
+""hi! link mkdHeading Violet
+""hi! link mkdDelimiter Violet
+""hi! link htmlH1 Violet
 
 " =============================================
 " Folding Settings
@@ -376,7 +378,9 @@ augroup quickfix
   autocmd QuickFixCmdPost lgetexpr lwindow
 augroup END
 
-" TMUX integration
 if exists('$TMUX')
-  autocmd BufEnter * call system('tmux rename-window ' . expand('%:p:h:t') . '/' . expand('%:t'))
+  let g:original_tmux_window_name = system('tmux display-message -p "#W" | tr -d "\n"')
+  autocmd BufEnter * call system('tmux rename-window ' . shellescape(expand('%:p:h:t') . '/' . expand('%:t')))
+  autocmd VimLeave * call system('tmux rename-window ' . shellescape(g:original_tmux_window_name))
 endif
+
