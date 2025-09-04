@@ -1,4 +1,4 @@
-" =============================================
+
 " Basic Settings
 " =============================================
 set noerrorbells
@@ -44,8 +44,8 @@ set hidden
 ""nnoremap N Nzzzv
 ""noremap <expr> j (v:count > 5 ? "jzz" : "j")
 ""nnoremap <expr> k (v:count > 5 ? "kzz" : "k")
-nnoremap <C-d> <C-d>zz
-nnoremap <C-u> <C-u>zz
+"nnoremap <C-d> <C-d>zz
+"nnoremap <C-u> <C-u>zz
 nnoremap <C-L> :nohl<CR><C-L>
 
 " =============================================
@@ -64,10 +64,11 @@ runtime! ftplugin/man.vim
 augroup force_go_ft
   autocmd!
   autocmd FileType godoc set filetype=go
+  autocmd FileType ad set filetype=adoc
 augroup END
 
 " Remove trailing whitespace on save
-autocmd BufWritePre *.yml,*.md,*.go,*.py,*.f90,*.f95,*.for :%s/\s\+$//e
+autocmd BufWritePre *.adoc,*.yml,*.md,*.go,*.py,*.f90,*.f95,*.for :%s/\s\+$//e
 match Visual '\s\+$'
 
 " Set filetype for container files
@@ -110,7 +111,7 @@ if v:progname =~? 'vim' || v:progname =~? 'nvim'
   set wildmenu
   set spell
   set wildmode=longest:full,full
-  
+
   " Persistent undo
   if has("persistent_undo")
     if v:progname =~ 'nvim'
@@ -140,7 +141,7 @@ let g:netrw_winsize = 25  " Set default width
 " General navigation and editing
 nnoremap <leader>e :find<Space>
 
-nnoremap <leader>w :ls<CR>:b<Space>
+nnoremap <leader>w :b<Space>
 
 nnoremap <leader>W :ls<CR>:tab sb<Space>
 nnoremap <leader><Space> :Explore<CR>
@@ -151,10 +152,11 @@ vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 nmap <C-p> mzyyP`z
 nnoremap <leader>o :execute 'tcd ' . fnameescape(expand('%:h'))<CR>fu
-nnoremap <leader>ca :!mksession ~/.vim/sessions/
+nnoremap <leader>ca :mksession! ~/.vim/sessions/
 nnoremap <leader>cs :so ~/.vim/sessions/
 nnoremap <leader>l :<C-u>marks ASDFETasd<CR>:normal! `
-let @a = "ciW{{ \<C-r>\" \<Esc>"
+let @t = "ciW\"\<C-r>=printf('{{ %s }}', @\")\<CR>\"\<Esc>"
+
 
 " Quickfix navigation
 nnoremap <Leader>co :copen<CR>
@@ -162,7 +164,7 @@ nnoremap <Leader>cm :make \| copen<CR>
 nnoremap <Leader>cc :cclose<CR>
 nnoremap <Leader>cp :cprev<CR>
 nnoremap <Leader>cn :cnext<CR>
-nnoremap <leader>fg :Grep<space> 
+nnoremap <leader>fg :Grep<space>
 command! -nargs=1 GitGrep silent grep! <args> `git ls-files` | copen | redraw!
 nnoremap <leader>fc :GitGrep<space>
 
@@ -172,6 +174,7 @@ set completeopt=menuone
 inoremap <C-F> <C-X><C-F>
 inoremap <C-O> <C-X><C-O>
 inoremap <C-L> <C-X><C-L>
+inoremap <C-K> <C-X><C-K>
 " =============================================
 " Clipboard Support
 " =============================================
@@ -193,18 +196,17 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 endif
 
 call plug#begin('~/.vim/plugged')
+Plug 'terrastruct/d2-vim'
   Plug 'fatih/vim-go'
   Plug 'morhetz/gruvbox'
   Plug 'mbbill/undotree'
   Plug 'preservim/vim-markdown'
   Plug 'hashivim/vim-terraform'
   Plug 'lepture/vim-jinja'
+  Plug 'pearofducks/ansible-vim'
   Plug 'psf/black', { 'branch': 'stable' }
   Plug 'davidhalter/jedi-vim'
-  if has('nvim')
-    Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-    Plug 'neoclide/coc.nvim', {'branch': 'release'}
-  endif
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 call plug#end()
 
 " =============================================
@@ -247,6 +249,11 @@ augroup vimrc-python
       \ cinwords=if,elif,else,for,while,try,except,finally,def,class,with
 augroup END
 
+augroup systemd_filetype
+  autocmd!
+  autocmd BufRead,BufNewFile *.service,*.socket,*.timer set filetype=systemd
+augroup END
+
 " Terraform settings
 let g:terraform_fmt_on_save = 1
 
@@ -254,7 +261,7 @@ let g:terraform_fmt_on_save = 1
 augroup black_on_save
   autocmd!
   autocmd BufWritePre *.py Black
-augroup end
+augroup END
 
 " Markdown settings
 let g:vim_markdown_folding_disabled = 1
@@ -262,19 +269,35 @@ let g:vim_markdown_new_list_item_indent = 2
 let g:vim_markdown_frontmatter = 1
 autocmd FileType markdown setlocal conceallevel=2 spell
 
+highlight MarkdownTodo ctermfg=Red guifg=Red
+augroup markdown_todo_highlight
+  autocmd!
+  autocmd FileType markdown syntax match MarkdownTodo /#TODO\!/
+augroup END
+
 " =============================================
 " Compilers and Make Settings
 " =============================================
+
+autocmd FileType yaml.ansible setlocal makeprg=ansible-lint\ -f\ pep8\ --nocolor\ --parseable\ .
+
+autocmd FileType yaml.ansible setlocal errorformat=%f:%l:\ %m
+
+augroup ansible_yaml
+  autocmd!
+  autocmd BufRead,BufNewFile *.yml set filetype=yaml.ansible
+  autocmd BufRead,BufNewFile *.yaml set filetype=yaml.ansible
+augroup END
+
+
 autocmd Filetype go set makeprg=go\ build
-autocmd FileType yaml setlocal makeprg=ansible-lint\ -f\ pep8\ --nocolor\ --parseable\ 
-autocmd FileType yaml setlocal errorformat=%f:%l:\ %m
 autocmd FileType python setlocal makeprg=python\ %
 autocmd FileType terraform setlocal makeprg=terraform\ validate\ %
 autocmd FileType sh,bash compiler shellcheck
 
 autocmd FileType go nnoremap <leader>p :normal! ifmt.Println("")<CR><ESC>
-au FileType go nmap <leader>n iif err != nil {return err<CR><ESC>
-au FileType python nmap <leader>p iprint(
+au FileType go nmap <leader>n iif err != nil {return err}<CR><ESC>
+au FileType python nmap <leader>p iprint()
 " =============================================
 " Color Scheme Settings
 " =============================================
@@ -299,10 +322,6 @@ endif
 set cinoptions+=:0 laststatus=0
 highlight SpellBad cterm=underline gui=underline ctermfg=NONE guifg=NONE ctermbg=NONE guibg=NONE
 
-""hi Violet guifg=#af87ff ctermfg=141
-""hi! link mkdHeading Violet
-""hi! link mkdDelimiter Violet
-""hi! link htmlH1 Violet
 
 " =============================================
 " Folding Settings
@@ -314,7 +333,6 @@ set nofoldenable
 " Format Options
 " =============================================
 set fo-=t fo+=c fo-=r fo-=o fo+=q fo-=w fo-=a fo-=n fo+=j fo-=2 fo-=v fo-=b fo+=l fo+=m fo+=M fo-=B fo+=1
-
 " =============================================
 " Auto Commands and Misc Functions
 " =============================================
@@ -325,8 +343,6 @@ augroup END
 
 filetype plugin on
 
-
-" Paste mode configuration
 function! XTermPasteBegin()
   set pastetoggle=<Esc>[201~
   set paste
@@ -335,22 +351,10 @@ endfunction
 
 inoremap <special> <expr> <Esc>[201~ XTermPasteBegin()
 
-" Auto-closing pairs
-function! ClosePair(opening, closing)
-  let col = col('.')
-  execute "normal! i" . a:opening
-  execute "normal! a" . a:closing
-  call cursor(line('.'), col)
-endfunction
-
-inoremap ( ()<Left>
+inoremap ( ()<C-g>U<Left>
 inoremap [ []<Left>
 inoremap { {}<Left>
-inoremap ' ''<Left>
-inoremap " ""<Left>
-inoremap ` ``<Left>
 
-" Automatically check for file updates
 if ! exists("g:CheckUpdateStarted")
   let g:CheckUpdateStarted=1
   call timer_start(1,'CheckUpdate')
@@ -378,9 +382,57 @@ augroup quickfix
   autocmd QuickFixCmdPost lgetexpr lwindow
 augroup END
 
+highlight MarkdownTodo ctermfg=Red guifg=Red cterm=bold gui=bold
+highlight MarkdownTag ctermfg=Cyan guifg=Red cterm=bold gui=bold
+augroup markdown_todo_highlight
+  autocmd!
+  autocmd FileType markdown syntax match MarkdownTodo /#TODO!/ containedin=ALL
+  autocmd FileType markdown call matchadd('MarkdownTag', '#\([A-Za-z0-9_]\+\)\>')
+augroup END
+
+
+autocmd FileType asciidoc setlocal foldmethod=expr foldexpr=getline(v:lnum)=~'^\\[source'?'>1':getline(v:lnum)=~'^----'?(getline(v:lnum-1)=~'^\\[source'?'1':'<1'):'='
+
+function! DocumentHeaders()
+    let l:filename = expand("%")
+    let l:lines = getbufline('%', 0, '$')
+    let l:lines = map(l:lines, {index, value -> {"lnum": index + 1, "text": value, "filename": l:filename}})
+
+    if &filetype ==# 'markdown'
+        call filter(l:lines, {_, value -> value.text =~# '^#\+ .*$'})
+    elseif &filetype ==# 'asciidoc' || &filetype ==# 'asciidoctor'
+        call filter(l:lines, {_, value -> value.text =~# '^=\+ .*$'})
+    else
+        call filter(l:lines, {_, value -> value.text =~# '^\(#\|=\)\+ .*$'})
+    endif
+
+    call setqflist(l:lines)
+    copen
+endfunction
+
+nnoremap <leader>h :call DocumentHeaders()<CR>
+
 if exists('$TMUX')
   let g:original_tmux_window_name = system('tmux display-message -p "#W" | tr -d "\n"')
-  autocmd BufEnter * call system('tmux rename-window ' . shellescape(expand('%:p:h:t') . '/' . expand('%:t')))
-  autocmd VimLeave * call system('tmux rename-window ' . shellescape(g:original_tmux_window_name))
+
+  augroup tmux_window_name
+    autocmd!
+    autocmd BufEnter * call system('tmux rename-window ' . shellescape(expand('%:p:h:t') . '/' . expand('%:t')))
+    autocmd VimLeave * call system('tmux rename-window ' . shellescape(g:original_tmux_window_name))
+  augroup END
 endif
+
+augroup session_and_marks
+  autocmd!
+  autocmd VimLeavePre * if v:this_session != '' | exec "mks! " . v:this_session | endif
+augroup END
+
+augroup asciidoc_conceal
+  autocmd!
+  autocmd FileType asciidoc,adoc syntax match asciidocLinkMacro /link:[^[]*\[[^\]]*\]/ contains=asciidocLinkHidden,asciidocLinkText
+  autocmd FileType asciidoc,adoc syntax match asciidocLinkHidden /link:[^[]*\[/ contained conceal
+  autocmd FileType asciidoc,adoc syntax match asciidocLinkHidden /\]/ contained conceal
+  autocmd FileType asciidoc,adoc highlight asciidocLinkMacro ctermfg=109 guifg=#83a598
+  autocmd FileType asciidoc,adoc setlocal conceallevel=2
+augroup END
 

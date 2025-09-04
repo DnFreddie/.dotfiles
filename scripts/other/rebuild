@@ -1,0 +1,5 @@
+#!/usr/bin/bash
+inotifywait -r -m -e close_write --include '\.tex$' . | while read -r path action file; do
+    echo "Detected change in $file. Rebuilding PDF..."
+    pdflatex main.tex
+done

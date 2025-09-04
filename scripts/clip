@@ -1,0 +1,22 @@
+#!/usr/bin/bash
+set -e
+# Rembember!
+# Set the base img
+# :imagesdir:  /home/nomachine/Documents/Pictures/
+PICTURES="$HOME/Documents/Pictures"
+output_file="$PICTURES/${1:-clipboard_image}.png"
+
+if [[ ! -d "$PICTURES" ]];then
+    mkdir -p "$PICTURES"
+fi
+
+if [[ -e "$output_file" ]]; then
+    echo "Same image found" 
+    exit 1
+fi
+
+xclip -selection clipboard -t image/png -o > "$output_file"
+
+
+echo "image::$(basename $output_file)[$1]"
+

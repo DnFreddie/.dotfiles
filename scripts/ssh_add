@@ -1,0 +1,91 @@
+#!/usr/bin/python3
+from dataclasses import dataclass, fields, MISSING
+from typing import get_type_hints, Optional
+
+
+# ANSI color codes
+class Colors:
+    BLUE = "\033[94m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    PURPLE = "\033[95m"
+    CYAN = "\033[96m"
+    BOLD = "\033[1m"
+    RESET = "\033[0m"
+
+
+@dataclass
+class Host:
+    name: str
+    hostname: str
+    user: str
+    port: int = 22
+    identity_file: Optional[str] = None
+    identities_only: bool = True
+
+    def print_config(self):
+        """Print SSH config format."""
+        config = f"""Host {self.name}
+    HostName {self.hostname}
+    User {self.user}
+    Port {self.port}"""
+
+        if self.identity_file:
+            config += f"\n    IdentityFile {self.identity_file}"
+
+        if not self.identities_only:
+            config += f"\n    IdentitiesOnly {str(self.identities_only).lower()}"
+
+        print(f"{Colors.CYAN}{config}{Colors.RESET}")
+        return config
+
+
+def prompt_for_dataclass(cls):
+    print(
+        f"\n{Colors.BOLD}{Colors.BLUE} Enter values for {cls.__name__}:{Colors.RESET}"
+    )
+    print(f"{Colors.CYAN}{'─' * 40}{Colors.RESET}")
+
+    values = {}
+    type_hints = get_type_hints(cls)
+
+    for field in fields(cls):
+        field_name = field.name
+        field_type = type_hints[field_name]
+        has_default = field.default is not MISSING
+
+        if has_default:
+            prompt = f"{Colors.GREEN}{field_name}{Colors.RESET} {Colors.YELLOW}(default: {field.default}){Colors.RESET}: "
+        else:
+            prompt = f"{Colors.GREEN}{field_name}{Colors.RESET} {Colors.RED}*{Colors.RESET}: "
+
+        while True:
+            user_input = input(prompt).strip()
+
+            if not user_input and has_default:
+                values[field_name] = field.default
+                break
+
+            if not user_input:
+                print(f"{Colors.RED}❌ This field is required.{Colors.RESET}")
+                continue
+            try:
+                if field_type == bool:
+                    values[field_name] = user_input.lower() in ["true", "1", "yes", "y"]
+                elif field_type == int:
+                    values[field_name] = int(user_input)
+                else:
+                    values[field_name] = user_input
+                break
+            except ValueError:
+                print(
+                    f"{Colors.RED}❌ Please enter a valid {field_type.__name__}{Colors.RESET}"
+                )
+
+    return cls(**values)
+
+
+if __name__ == "__main__":
+    host = prompt_for_dataclass(Host)
+    host.print_config()

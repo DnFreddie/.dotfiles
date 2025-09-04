@@ -1,0 +1,18 @@
+#!/bin/bash
+input="${1:-45}" 
+
+at now + "$input" minutes <<EOF
+tmux new-window -t ansible_aws -n timer 'echo "
+████████ ██ ███    ███ ███████ ██████      ██    ██ ██████  ██ 
+   ██    ██ ████  ████ ██      ██   ██     ██    ██ ██   ██ ██ 
+   ██    ██ ██ ████ ██ █████   ██████      ██    ██ ██████  ██ 
+   ██    ██ ██  ██  ██ ██      ██   ██     ██    ██ ██      ██ 
+   ██    ██ ██      ██ ███████ ██   ██      ██████  ██      ██ 
+
+                    TIMER FINISHED!
+" | less'
+tmux switch-client -t ansible_aws:timer
+notify-send  "⏰$input minutes has passed !!!"
+EOF
+
+echo "⏰ Timer set for $input minutes!"

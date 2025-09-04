@@ -1,0 +1,38 @@
+#!/usr/bin/bash
+
+debug_ansible(){
+ansible=$(cat <<EOF
+- name: Debug
+  debug:
+    msg: DEBUG: {{ }}
+EOF
+)
+echo  "$ansible"
+}
+debug_golang(){
+golang=$(cat <<EOF
+if err != nil {
+
+return err
+}
+EOF
+)
+echo  "$golang"
+}
+
+debug_python(){
+python=$(cat <<EOF
+print()
+EOF
+)
+echo  "$python"
+}
+
+case "$1" in
+    a)
+        debug_ansible;;
+    g)
+        debug_golang;;
+    p)
+        debug_python;;
+    esac

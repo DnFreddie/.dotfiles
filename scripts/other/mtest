@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -e
+
+SESSION="molecule-tests"
+COLLECTION_DIR="$HOME/project03.nomachine.com/ansible-elk-collection"
+VENV_PATH="$HOME/env/pyVenv/ansible/bin/activate"
+
+if ! tmux has-session -t "$SESSION" 2>/dev/null; then
+  tmux new-session -d -s "$SESSION"
+fi
+
+mapfile -d '' test_dirs < <(find "$COLLECTION_DIR/roles" -mindepth 1 -maxdepth 1 -type d -print0)
+
+
+for dir in "${test_dirs[@]}"; do
+  window_name="test-$(basename "$dir")"
+
+  tmux new-window -t "$SESSION" -n "$window_name"
+  tmux send-keys -t "$SESSION:$window_name" "cd '$dir'" C-m
+  tmux send-keys -t "$SESSION:$window_name" "source '$VENV_PATH'" C-m
+  tmux send-keys -t "$SESSION:$window_name" "export ANSIBLE_ROLES_PATH='$COLLECTION_DIR/roles'" C-m
+  tmux send-keys -t "$SESSION:$window_name" "molecule test" C-m
+done
+

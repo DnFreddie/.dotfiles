@@ -1,0 +1,107 @@
+#!/usr/bin/bash
+
+show_usage() {
+    echo "Usage: $0 [flags]"
+    echo "Flags:"
+    echo "  -c    Code block template"
+    echo "  -t    Tip template"
+    echo "  -co   Collapsible template"
+    echo "  -ta   Table template"
+    echo "  -i    Image template"
+    echo "  -h    Show this help"
+}
+
+print_code_template() {
+    cat << 'EOF'
+[source,bash]
+----
+
+----
+EOF
+}
+
+print_tip_template() {
+    cat << 'EOF'
+[TIP]
+====
+
+====
+EOF
+}
+
+print_collapsible_template() {
+    cat << 'EOF'
+.Click to expand
+[%collapsible]
+====
+
+====
+EOF
+}
+
+print_table_template() {
+    cat << 'EOF'
+[cols="1,1,1"]
+|===
+|Header 1 |Header 2 |Header 3
+
+|Cell 1
+|Cell 2
+|Cell 3
+
+|Cell 4
+|Cell 5
+|Cell 6
+|===
+EOF
+}
+
+print_image_template() {
+    cat << 'EOF'
+:imagesdir: ./images
+
+image::example.png[Example Image, width=600, align=center]
+EOF
+}
+
+# Check if no arguments provided
+if [ $# -eq 0 ]; then
+    show_usage
+    exit 1
+fi
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        c)
+           print_code_template
+           shift
+           ;;
+        t)
+           print_tip_template
+           shift
+           ;;
+        co)
+           print_collapsible_template
+           shift
+           ;;
+        ta)
+           print_table_template
+           shift
+           ;;
+        i)
+           print_image_template
+           shift
+           ;;
+        h|--help)
+            show_usage
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $1"
+            show_usage
+            exit 1
+            ;;
+    esac
+done
+

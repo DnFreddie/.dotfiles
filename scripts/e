@@ -1,0 +1,168 @@
+#!/usr/bin/bash
+
+AGENDA_DIR="$HOME/Agenda"
+
+declare -a PR
+
+get_projects() {
+ PR=()
+ 
+ for f in "$AGENDA_DIR"/*.adoc 
+ do 
+   if [[ -f "$f" ]]; then
+     PR+=("$f")
+   fi
+ done
+ 
+ find_adoc_files "$AGENDA_DIR"
+}
+
+find_adoc_files() {
+ local dir="$1"
+ 
+ for subdir in "$dir"/*/ 
+ do
+   if [[ -d "$subdir" ]]; then
+     local project_name=$(basename "$subdir")
+     if [[ -f "$subdir/$project_name.adoc" ]]; then
+       PR+=("$subdir/$project_name.adoc")
+     fi
+     
+     find_adoc_files "$subdir"
+   fi
+ done
+}
+
+check_if_match() {
+ local query="$1"
+ local matches=()
+ 
+ for p in "${PR[@]}"
+ do
+   local project_basename=$(basename "$(dirname "$p")")
+   local file_basename=$(basename "$p" .adoc)
+   
+   if [[ "$project_basename" == "$query"* || "$file_basename" == "$query"* ]]; then
+     matches+=("$p")
+   fi
+ done
+ 
+ if [[ ${#matches[@]} -eq 0 ]]; then
+   return 1
+ elif [[ ${#matches[@]} -eq 1 ]]; then
+   echo "${matches[0]}"
+   return 0
+ else
+   selected=$(printf '%s\n' "${matches[@]}" | fzf --reverse --prompt="Multiple matches found, select one: ")
+   if [[ -n "$selected" ]]; then
+     echo "$selected"
+     return 0
+   else
+     return 1
+   fi
+ fi
+}
+
+create_note() {
+ local note_name="$1"
+ local parent_dir="$2"
+ 
+ # Set default parent directory if not provided
+ if [[ -z "$parent_dir" ]]; then
+   parent_dir="$AGENDA_DIR"
+ fi
+ 
+ get_projects
+ check_if_match "$note_name"
+ match_result=$?
+ 
+ if [[ $match_result -eq 0 ]]; then
+   # If project already exists, just open the file
+   vi "$(check_if_match "$note_name")"
+ else
+   # Create project directory if it doesn't exist
+   local project_dir="$parent_dir/$note_name"
+   
+   # Create the directory
+   mkdir -p "$project_dir"
+   
+   # Create and open the .adoc file inside the project directory
+   vi "$project_dir/$note_name.adoc"
+ fi
+}
+
+# Function to list all projects with their paths
+list_projects() {
+ get_projects
+ echo "Available projects:"
+ for p in "${PR[@]}"
+ do
+   # Get relative path from AGENDA_DIR
+   local rel_path="${p#$AGENDA_DIR/}"
+   local project_name=$(basename "$p" .adoc)
+   # Display with proper indentation based on nesting level
+   local indent=""
+   local path_parts=$(echo "$rel_path" | grep -o '/' | wc -l)
+   for ((i=1; i<path_parts; i++)); do
+     indent+="  "
+   done
+
+   echo "${indent}${project_name}"
+ done
+}
+
+# Function to list all project directories
+list_project_dirs() {
+ echo "Project directories:"
+ for d in "$AGENDA_DIR"/*/ 
+ do
+   if [[ -d "$d" ]]; then
+     echo "  $(basename "$d")"
+   fi
+ done
+}
+
+# Function to pick a project using fzf
+pick_project() {
+ get_projects
+ selected_file=$(printf '%s\n' "${PR[@]}" | fzf --reverse --prompt="Select a project: ")
+ 
+ if [[ -n "$selected_file" ]]; then
+   vi "$selected_file"
+ fi
+}
+
+[[ ! -d "$AGENDA_DIR" ]] && mkdir -p "$AGENDA_DIR"
+
+case "$1" in 
+ c | create )
+   if [[ -z "$2" ]]; then
+     echo "Please provide a note name"
+     exit 1
+   fi
+   create_note "$2"
+   ;;
+ iw )
+   if [[ -z "$2" ]]; then
+     echo "Please provide a note name"
+     exit 1
+   fi
+   create_note "$2"
+   ;;
+ list )
+   list_projects
+   ;;
+ dirs )
+   list_project_dirs
+   ;;
+ pick )
+   pick_project
+   ;;
+ * ) 
+   echo "Usage: $0 {c|create|iw|list|dirs|pick} [note_name]"
+   echo "  c, create, iw [name]: Create or edit a note and project directory"
+   echo "  list: List all projects"
+   echo "  dirs: List all project directories"
+   echo "  pick: Select a project with fzf"
+   ;;
+esac

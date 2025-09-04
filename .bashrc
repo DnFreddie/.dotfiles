@@ -22,7 +22,10 @@ if ! shopt -oq posix; then
 fi
 
 #  ------------- Options --------------------
-#set -o vi
+set -o vi
+bind -m vi-command '"\C-l": clear-screen'
+bind -m vi-insert '"\C-l": clear-screen'
+
 shopt -s checkwinsize
 shopt -s expand_aliases
 shopt -s histappend
@@ -39,18 +42,22 @@ shopt -s cdspell
 
 #---------------Aliases---------------
 alias tn="g s tn"
+alias ta="tmux a"
+alias rn="tmux rename-window"
 alias sys="systemctl"
 alias sysu="systemctl --user"
 alias c="bat -p"
 alias grepi="grep -i -r --exclude-dir=.git"
 alias k='kubectl'
 alias chmox='chmod +x'
+alias vm="venvpy"
 alias vi="vim"
-alias v="nvim"
-alias d="podman"
 alias dps="docker ps --format 'table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'"
 alias dpi="docker images --format 'table {{.Repository}}\t{{.Tag}}\t{{.Size}}'"
-# alias "apt history"= "grep 'install' /var/log/dpkg.log* | sort | cut -f1,2,4 -d ''"
+alias pps="podman ps --format 'table {{.ID}}\t{{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'"
+alias ppi="podman images --format 'table {{.Repository}}\t{{.Tag}}\t{{.Size}}'"
+
+alias files="nautilus"
 
 #---------------Terraform---------------
 alias tfp="terraform plan"
@@ -150,7 +157,7 @@ open() {
 
 
 #------------- Bash settings --------------------
-export PROMPT_COMMAND='history -a; history -r'
+export PROMPT_COMMAND='history -a; history -r; __ps1'
 
 
 export HISTCONTROL=ignoredups:erasedups
@@ -164,6 +171,7 @@ export EDITOR="vim"
 export VISUAL="vim"
 export LAB="$HOME/github.com/DnFreddie/"
 export JUNK="$HOME/.junk/"
+export PR="$HOME/.junk/"
 
 export LESS_TERMCAP_mb=$'\E[1;38;2;245;194;231m'             # Pink
 export LESS_TERMCAP_md=$'\E[1;38;2;137;180;250m'             # Blue
@@ -175,7 +183,7 @@ export LESS_TERMCAP_se=$'\E[0m'                              # Reset search high
 
 #---------------Prompt---------------
 
-configure_prompt() {
+__ps1() {
 	git_branch() {
 		local branch
 		if branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); then
@@ -191,8 +199,19 @@ configure_prompt() {
 \[\e[38;2;211;134;155m\]\u \[\e[38;2;146;131;116m\]\w\
 \[\e[38;2;131;165;152m\]\$(git_branch)\n\
 \[\e[38;2;250;189;47m\]\$ \[\e[0m\]${VIRTUAL_ENV:+ ($(basename "$VIRTUAL_ENV"))}"
-
+if _have tmux && [[ -n "$TMUX" ]]; then
+tmux rename-window "$(wd)"
+fi
 }
+
+  wd() {
+      dir="${PWD##*/}"
+      parent="${PWD%"/${dir}"}"
+      parent="${parent##*/}"
+      echo "$parent/$dir"
+  } && export wd
+
+
 #---------------Setup env---------------
 setup_environment() {
 #---------------Go-related settings---------------
@@ -213,14 +232,15 @@ setup_environment() {
 }
 
 setup_environment
-configure_prompt
+
 
 unset -f setup_environment
-unset -f configure_prompt
 
 # Things added automatically
 #----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+export PATH="$HOME/.local/share/gem/ruby/3.2.0/bin:$PATH"
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+source "$HOME/.bash_aliases"
